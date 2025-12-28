@@ -1,5 +1,6 @@
 <!-- markdownlint-disable MD060 -->
 <!-- markdownlint-disable MD026 -->
+<!-- markdownlint-disable MD033 -->
 # 🧠 How JavaScript Works Behind the Scenes
 
 ## 📋 Table of Contents
@@ -11,6 +12,11 @@
 5. [Microtasks vs Macrotasks](#microtasks-vs-macrotasks)
 6. [Complete Execution Flow](#complete-execution-flow)
 7. [Code Examples](#code-examples)
+8. [setTimeout & Promise Execution Flow](#settimeout--promise-execution-flow)
+9. [Code Examples & Patterns](#code-examples--patterns)
+10. [Practice Questions](#practice-questions)
+11. [Common Interview Traps](#common-interview-traps)
+12. [Real-World Implications](#real-world-implications)
 
 ---
 
@@ -634,5 +640,622 @@ log('Sync 2', 'SYNC');
 // [MICRO] Micro 2
 // [MACRO] Macro 1
 ```
+
+---
+
+## setTimeout & Promise Execution Flow
+
+### The Original Question
+
+```javascript
+setTimeout(() => {
+  console.log('2');
+  
+  Promise.resolve().then(() => console.log('3'));
+  
+  setTimeout(() => console.log('4'), 0);
+}, 0);
+```
+
+**Output:** `2 → 3 → 4`
+
+**Why?** Microtasks (Promises) execute BEFORE the next Macrotask (setTimeout)
+
+---
+
+### **Visual Step-by-Step Breakdown**
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 1: INITIAL STATE                                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Call Stack:      [Empty]                                       │
+│  Macrotask Queue: []                                            │
+│  Microtask Queue: []                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 2: setTimeout REGISTERED                                  │
+├─────────────────────────────────────────────────────────────────┤
+│  setTimeout(() => { ... }, 0);                                  │
+│                                                                 │
+│  Call Stack:      [Empty]                                       │
+│  Macrotask Queue: [callback1] ← First setTimeout added          │
+│  Microtask Queue: []                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 3: EVENT LOOP PICKS FIRST MACROTASK                       │
+├─────────────────────────────────────────────────────────────────┤
+│  Event Loop: "Call Stack empty, taking one macrotask"           │
+│                                                                 │
+│  Call Stack:      [callback1] ← Executing                       │
+│  Macrotask Queue: []                                            │
+│  Microtask Queue: []                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 4: console.log('2') EXECUTES                              │
+├─────────────────────────────────────────────────────────────────┤
+│  console.log('2');  ✅ OUTPUT: 2                                │
+│                                                                 │
+│  Call Stack:      [callback1]                                   │
+│  Macrotask Queue: []                                            │
+│  Microtask Queue: []                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 5: PROMISE CREATED                                        │
+├─────────────────────────────────────────────────────────────────┤
+│  Promise.resolve().then(() => console.log('3'));                │
+│                                                                 │
+│  Call Stack:      [callback1]                                   │
+│  Macrotask Queue: []                                            │
+│  Microtask Queue: [promise_callback] ← Promise added            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 6: SECOND setTimeout REGISTERED                           │
+├─────────────────────────────────────────────────────────────────┤
+│  setTimeout(() => console.log('4'), 0);                         │
+│                                                                 │
+│  Call Stack:      [callback1]                                   │
+│  Macrotask Queue: [callback2] ← Second setTimeout added         │
+│  Microtask Queue: [promise_callback]                            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 7: FIRST MACROTASK COMPLETES                              │
+├─────────────────────────────────────────────────────────────────┤
+│  callback1 execution finished                                   │
+│                                                                 │
+│  Call Stack:      [Empty] ← callback1 finished                  │
+│  Macrotask Queue: [callback2] ← Waiting                         │
+│  Microtask Queue: [promise_callback] ← Must execute now!        │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 8: MICROTASK EXECUTES (PRIORITY!)                         │
+├─────────────────────────────────────────────────────────────────┤
+│  🚨 CRITICAL: After macrotask, ALL microtasks execute first!    │
+│                                                                 │
+│  console.log('3');  ✅ OUTPUT: 3                                │
+│                                                                 │
+│  Call Stack:      [promise_callback] ← Executing                │
+│  Macrotask Queue: [callback2] ← Still waiting                   │
+│  Microtask Queue: []                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 9: MICROTASKS EMPTY - NEXT MACROTASK                      │
+├─────────────────────────────────────────────────────────────────┤
+│  Event Loop: "Microtasks done, taking next macrotask"           │
+│                                                                 │
+│  Call Stack:      [Empty]                                       │
+│  Macrotask Queue: [callback2]                                   │
+│  Microtask Queue: [] ← Empty, so move to macrotask              │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 10: SECOND setTimeout EXECUTES                            │
+├─────────────────────────────────────────────────────────────────┤
+│  console.log('4');  ✅ OUTPUT: 4                                │
+│                                                                 │
+│  Call Stack:      [callback2] ← Executing                       │
+│  Macrotask Queue: []                                            │
+│  Microtask Queue: []                                            │
+└─────────────────────────────────────────────────────────────────┘
+
+                         ↓
+
+┌─────────────────────────────────────────────────────────────────┐
+│  FINAL STATE: ALL DONE                                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Call Stack:      [Empty]                                       │
+│  Macrotask Queue: []                                            │
+│  Microtask Queue: []                                            │
+│                                                                 │
+│  ✅ COMPLETE OUTPUT: 2 → 3 → 4                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Timeline View
+
+```text
+Time  Event                           Queue State                 Output
+────────────────────────────────────────────────────────────────────────
+T1    setTimeout registered           Macro: [cb1]                
+                                      Micro: []
+
+T2    Event Loop picks cb1            Macro: []
+                                      Micro: []
+
+T3    Execute console.log('2')        Macro: []                   2 ✅
+                                      Micro: []
+
+T4    Promise added                   Macro: []
+                                      Micro: [promise]
+
+T5    Second setTimeout added         Macro: [cb2]
+                                      Micro: [promise]
+
+T6    cb1 completes                   Macro: [cb2]
+      Check microtasks ⚡              Micro: [promise]
+
+T7    Execute Promise                 Macro: [cb2]                3 ✅
+                                      Micro: []
+
+T8    Microtasks empty                Macro: [cb2]
+      Take next macrotask             Micro: []
+
+T9    Execute second setTimeout       Macro: []                   4 ✅
+                                      Micro: []
+
+T10   All done                        Macro: []
+                                      Micro: []
+────────────────────────────────────────────────────────────────────────
+```
+
+---
+
+## The Golden Rule
+
+```text
+╔═══════════════════════════════════════════════════════════════╗
+║                    EVENT LOOP PRIORITY                        ║
+╠═══════════════════════════════════════════════════════════════╣
+║                                                               ║
+║  After EVERY Macrotask:                                       ║
+║                                                               ║
+║  1️⃣  Execute ALL Microtasks (until queue is empty)            ║
+║  2️⃣  Then take ONE Macrotask                                  ║
+║  3️⃣  Repeat                                                   ║
+║                                                               ║
+║  ⚡ Microtasks ALWAYS have priority over next Macrotask       ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## Code Examples & Patterns
+
+### **Pattern 1: Basic Nesting**
+
+```javascript
+setTimeout(() => {
+  console.log('A');
+  Promise.resolve().then(() => console.log('B'));
+  setTimeout(() => console.log('C'), 0);
+}, 0);
+```
+
+**Output:** `A → B → C`
+
+**Execution:**
+
+1. First setTimeout (Macrotask) → prints `A`
+2. Promise (Microtask) → prints `B`
+3. Second setTimeout (Macrotask) → prints `C`
+
+---
+
+### **Pattern 2: Multiple Microtasks**
+
+```javascript
+setTimeout(() => {
+  console.log('A');
+  Promise.resolve().then(() => console.log('B'));
+  Promise.resolve().then(() => console.log('C'));
+}, 0);
+```
+
+**Output:** `A → B → C`
+
+**Why?** ALL microtasks execute before next macrotask.
+
+```text
+Step 1: setTimeout executes → A
+Step 2: Two promises added to Microtask Queue
+Step 3: Macrotask completes
+Step 4: Execute ALL microtasks → B, C
+```
+
+---
+
+### **Pattern 3: Chained Promises**
+
+```javascript
+setTimeout(() => {
+  console.log('1');
+  
+  Promise.resolve()
+    .then(() => {
+      console.log('2');
+      return Promise.resolve();
+    })
+    .then(() => console.log('3'));
+    
+}, 0);
+```
+
+**Output:** `1 → 2 → 3`
+
+**Why?** Chained promises are still microtasks, all execute together.
+
+---
+
+### **Pattern 4: Mixed Order**
+
+```javascript
+setTimeout(() => console.log('1'), 0);
+
+Promise.resolve().then(() => {
+  console.log('2');
+  setTimeout(() => console.log('3'), 0);
+});
+
+setTimeout(() => console.log('4'), 0);
+```
+
+**Output:** `2 → 1 → 4 → 3`
+
+**Breakdown:**
+
+```text
+Initial State:
+  Macrotasks: [setTimeout(1), setTimeout(4)]
+  Microtasks: [Promise(2)]
+
+Step 1: Execute microtasks first
+  → console.log('2')
+  → setTimeout(3) added to Macrotasks
+  
+Step 2: Execute first macrotask
+  → console.log('1')
+  
+Step 3: Execute second macrotask
+  → console.log('4')
+  
+Step 4: Execute third macrotask
+  → console.log('3')
+```
+
+---
+
+### **Pattern 5: Complex Nesting**
+
+```javascript
+setTimeout(() => {
+  console.log('A');
+  
+  Promise.resolve().then(() => {
+    console.log('B');
+    setTimeout(() => console.log('C'), 0);
+  });
+  
+  setTimeout(() => console.log('D'), 0);
+}, 0);
+
+setTimeout(() => console.log('E'), 0);
+```
+
+**Output:** `A → B → D → E → C`
+
+**Step-by-step:**
+
+```text
+Initial:
+  Macro: [setTimeout(A), setTimeout(E)]
+  Micro: []
+
+1. Execute setTimeout(A)
+   → Print 'A'
+   → Add Promise(B) to Microtasks
+   → Add setTimeout(D) to Macrotasks
+   State: Macro: [setTimeout(E), setTimeout(D)]
+          Micro: [Promise(B)]
+
+2. Execute ALL Microtasks
+   → Print 'B'
+   → Add setTimeout(C) to Macrotasks
+   State: Macro: [setTimeout(E), setTimeout(D), setTimeout(C)]
+          Micro: []
+
+3. Execute setTimeout(D)
+   → Print 'D'
+   State: Macro: [setTimeout(E), setTimeout(C)]
+          Micro: []
+
+4. Execute setTimeout(E)
+   → Print 'E'
+   State: Macro: [setTimeout(C)]
+          Micro: []
+
+5. Execute setTimeout(C)
+   → Print 'C'
+   State: Macro: []
+          Micro: []
+```
+
+---
+
+## Practice Questions
+
+### **Question 1:**
+
+```javascript
+setTimeout(() => {
+  console.log('X');
+  Promise.resolve().then(() => console.log('Y'));
+}, 0);
+
+Promise.resolve().then(() => console.log('Z'));
+```
+
+**What's the output?**
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer:** `Z → X → Y`
+
+**Explanation:**
+
+1. Promise(Z) is in Microtask queue immediately
+2. setTimeout(X) is in Macrotask queue
+3. Microtasks execute first → Z
+4. Then macrotask → X
+5. Then microtask from inside setTimeout → Y
+
+</details>
+
+---
+
+### **Question 2:**
+
+```javascript
+console.log('1');
+
+setTimeout(() => console.log('2'), 0);
+
+Promise.resolve()
+  .then(() => console.log('3'))
+  .then(() => console.log('4'));
+
+console.log('5');
+```
+
+**What's the output?**
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer:** `1 → 5 → 3 → 4 → 2`
+
+**Explanation:**
+
+1. Synchronous: 1, 5
+2. Microtasks: 3, 4 (chained promises)
+3. Macrotask: 2
+
+</details>
+
+---
+
+### **Question 3:**
+
+```javascript
+setTimeout(() => {
+  console.log('A');
+  Promise.resolve().then(() => {
+    console.log('B');
+    Promise.resolve().then(() => console.log('C'));
+  });
+}, 0);
+```
+
+**What's the output?**
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer:** `A → B → C`
+
+**Explanation:**
+
+1. setTimeout executes → A
+2. Promise(B) added to Microtask queue
+3. Macrotask completes, execute microtasks
+4. Promise(B) executes → B, adds Promise(C)
+5. Continue microtasks → C
+
+</details>
+
+---
+
+### **Question 4: Advanced**
+
+```javascript
+setTimeout(() => console.log('1'), 0);
+
+Promise.resolve().then(() => {
+  console.log('2');
+  setTimeout(() => {
+    console.log('3');
+    Promise.resolve().then(() => console.log('4'));
+  }, 0);
+  Promise.resolve().then(() => console.log('5'));
+});
+
+setTimeout(() => console.log('6'), 0);
+```
+
+**What's the output?**
+
+<details>
+<summary>Click to reveal answer</summary>
+
+**Answer:** `2 → 5 → 1 → 6 → 3 → 4`
+
+**Detailed Breakdown:**
+
+```text
+Initial:
+  Macro: [setTimeout(1), setTimeout(6)]
+  Micro: [Promise(2)]
+
+Step 1: Microtask
+  → Print 2
+  → Add setTimeout(3) to Macros
+  → Add Promise(5) to Micros
+  State: Macro: [setTimeout(1), setTimeout(6), setTimeout(3)]
+         Micro: [Promise(5)]
+
+Step 2: Continue Microtasks
+  → Print 5
+  State: Macro: [setTimeout(1), setTimeout(6), setTimeout(3)]
+         Micro: []
+
+Step 3: Macrotask
+  → Print 1
+  State: Macro: [setTimeout(6), setTimeout(3)]
+         Micro: []
+
+Step 4: Macrotask
+  → Print 6
+  State: Macro: [setTimeout(3)]
+         Micro: []
+
+Step 5: Macrotask
+  → Print 3
+  → Add Promise(4) to Micros
+  State: Macro: []
+         Micro: [Promise(4)]
+
+Step 6: Microtask
+  → Print 4
+  State: Macro: []
+         Micro: []
+```
+
+</details>
+
+---
+
+## Common Interview Traps
+
+| ❌ Wrong Assumption | ✅ Correct Understanding |
+|---------------------|--------------------------|
+| `setTimeout(..., 0)` executes immediately | It waits in Macrotask queue |
+| Promises execute after setTimeout | Promises (Microtasks) execute BEFORE setTimeout |
+| Only one microtask executes per cycle | ALL microtasks execute before next macrotask |
+| Order is based on registration | Order is based on task type priority |
+| Nested setTimeout executes before promises | Promises inside setTimeout execute before next setTimeout |
+
+---
+
+## Real-World Implications
+
+### **1. UI Responsiveness**
+
+```javascript
+// BAD: Blocks UI
+setTimeout(() => {
+  // Heavy computation
+  for (let i = 0; i < 1e9; i++) {}
+}, 0);
+
+// GOOD: Allows UI updates between chunks
+function processInChunks(data) {
+  const chunk = data.splice(0, 100);
+  processChunk(chunk);
+  
+  if (data.length > 0) {
+    setTimeout(() => processInChunks(data), 0);
+  }
+}
+```
+
+### **2. State Management**
+
+```javascript
+// Guaranteed execution before next render
+setState(newValue);
+Promise.resolve().then(() => {
+  // This runs before next macrotask/render
+  updateDependentState();
+});
+```
+
+### **3. Event Handling**
+
+```javascript
+button.addEventListener('click', () => {
+  // Synchronous
+  updateUI();
+  
+  // Microtask - runs before next click can be processed
+  Promise.resolve().then(() => {
+    validateState();
+  });
+  
+  // Macrotask - might run after next click
+  setTimeout(() => {
+    logAnalytics();
+  }, 0);
+});
+```
+
+---
+
+## Key Takeaway
+
+1. **Microtasks > Macrotasks** in priority
+2. **ALL microtasks** execute before next macrotask
+3. **Promises** are microtasks, **setTimeout** is macrotask
+4. After completing a macrotask, Event Loop **ALWAYS checks microtasks first**
+5. New microtasks added during microtask execution are **processed immediately**
+6. Understanding this prevents race conditions and timing bugs
 
 ---
