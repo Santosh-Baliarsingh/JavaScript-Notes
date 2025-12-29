@@ -649,15 +649,15 @@ const flat2 = nested.reduce((acc, arr) => acc.concat(arr), []);
 | **join()** | String | ❌ No | `"1,2,3"` |
 | **toString()** | String | ❌ No | `"1,2,3"` |
 | **toLocaleString()** | Localized string | ❌ No | `"1,000"` |
-| **forEach()** | \`undefined\` | ❌ No | `undefined` |
+| **forEach()** | `undefined` | ❌ No | `undefined` |
 | **map()** | New array | ❌ No | `[2, 4, 6]` |
 | **filter()** | New array | ❌ No | `[2, 4]` |
 | **reduce()** | Single value (any type) | ❌ No | `10` or `{}` |
 | **reduceRight()** | Single value (any type) | ❌ No | `"cba"` |
-| **find()** | Element or \`undefined\` | ❌ No | `12` |
-| **findIndex()** | Index or \`-1\` | ❌ No | `3` |
-| **findLast()** | Element or \`undefined\` | ❌ No | `44` |
-| **findLastIndex()** | Index or \`-1\` | ❌ No | `4` |
+| **find()** | Element or `undefined` | ❌ No | `12` |
+| **findIndex()** | Index or `-1` | ❌ No | `3` |
+| **findLast()** | Element or `undefined` | ❌ No | `44` |
+| **findLastIndex()** | Index or `-1` | ❌ No | `4` |
 | **some()** | Boolean | ❌ No | `true` |
 | **every()** | Boolean | ❌ No | `false` |
 | **indexOf()** | Index or `-1` | ❌ No | `2` |
@@ -714,7 +714,5 @@ console.log(rest);   // [3, 4, 5]
 ## Resources
 
 - [MDN Array Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)
-- ECMAScript Specifications
-- JavaScript.info - Arrays
 
 ---
