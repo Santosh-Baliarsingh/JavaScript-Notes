@@ -1,494 +1,674 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
-<!-- markdownlint-disable MD042 -->
-# JavaScript String Methods
 
----
+# JavaScript Arrays
 
 ## Table of Contents
 
-- [A. Case Conversion](#a-case-conversion)
-- [B. Searching & Checking](#b-searching--checking)
-- [C. Extracting Substrings](#c-extracting-substrings)
-- [D. Modifying Strings](#d-modifying-strings)
-- [E. Trimming](#e-trimming)
-- [F. Replacing](#f-replacing)
-- [G. Splitting](#g-splitting)
-- [H. Localization](#h-localization)
-- [I. Conversion (Static Methods)](#i-conversion-static-methods)
-- [J. Iteration](#j-iteration)
-- [Practical Use Cases](#practical-use-cases)
-- [Common Interview Traps](#common-interview-traps)
-- [Performance Tips](#performance-tips)
-- [Quick Reference Table](#quick-reference-table)
-- [Key Takeaways](#key-takeaways)
+- [JavaScript Arrays](#javascript-arrays)
+  - [Table of Contents](#table-of-contents)
+  - [What is an Array?](#what-is-an-array)
+  - [Creating Arrays](#creating-arrays)
+  - [Performance Characteristics](#performance-characteristics)
+  - [Array Methods](#array-methods)
+    - [A. MUTATING METHODS (Change original array)](#a-mutating-methods-change-original-array)
+      - [1. `push()` - Add to end](#1-push---add-to-end)
+      - [2. `pop()` - Remove from end](#2-pop---remove-from-end)
+      - [3. `unshift()` - Add to beginning](#3-unshift---add-to-beginning)
+      - [4. `shift()` - Remove from beginning](#4-shift---remove-from-beginning)
+      - [5. `splice()` - Add/remove at any position](#5-splice---addremove-at-any-position)
+      - [6. `reverse()` - Reverse in place](#6-reverse---reverse-in-place)
+      - [7. `sort()` - Sort in place](#7-sort---sort-in-place)
+      - [8. `fill()` - Fill with static value](#8-fill---fill-with-static-value)
+      - [9. `copyWithin()` - Copy part to another location](#9-copywithin---copy-part-to-another-location)
+    - [B. NON-MUTATING METHODS (Return new array/value)](#b-non-mutating-methods-return-new-arrayvalue)
+      - [10. `concat()` - Merge arrays](#10-concat---merge-arrays)
+      - [11. `slice()` - Extract portion](#11-slice---extract-portion)
+      - [12. `join()` - Convert to string](#12-join---convert-to-string)
+      - [13. `toString()` - Comma-separated string](#13-tostring---comma-separated-string)
+    - [C. ITERATION METHODS](#c-iteration-methods)
+      - [14. `forEach()` - Execute function for each](#14-foreach---execute-function-for-each)
+      - [15. `map()` - Transform each element](#15-map---transform-each-element)
+      - [16. `filter()` - Keep matching elements](#16-filter---keep-matching-elements)
+      - [17. `reduce()` - Reduce to single value](#17-reduce---reduce-to-single-value)
+      - [18. `reduceRight()` - Reduce from right](#18-reduceright---reduce-from-right)
+      - [19. `find()` - First matching element](#19-find---first-matching-element)
+      - [20. `findIndex()` - Index of first match](#20-findindex---index-of-first-match)
+      - [21. `findLast()` - Last matching element (ES2023)](#21-findlast---last-matching-element-es2023)
+      - [22. `findLastIndex()` - Index of last match (ES2023)](#22-findlastindex---index-of-last-match-es2023)
+      - [23. `some()` - Check if ANY matches](#23-some---check-if-any-matches)
+      - [24. `every()` - Check if ALL match](#24-every---check-if-all-match)
+    - [D. SEARCH METHODS](#d-search-methods)
+      - [25. `indexOf()` - First index of element](#25-indexof---first-index-of-element)
+      - [26. `lastIndexOf()` - Last index of element](#26-lastindexof---last-index-of-element)
+      - [27. `includes()` - Check existence (ES2016)](#27-includes---check-existence-es2016)
+    - [E. FLAT \& TRANSFORMATION](#e-flat--transformation)
+      - [28. `flat()` - Flatten nested arrays (ES2019)](#28-flat---flatten-nested-arrays-es2019)
+      - [29. `flatMap()` - Map + flatten (ES2019)](#29-flatmap---map--flatten-es2019)
+    - [F. STATIC METHODS](#f-static-methods)
+      - [30. `Array.isArray()` - Check if array](#30-arrayisarray---check-if-array)
+      - [31. `Array.from()` - Create from iterable](#31-arrayfrom---create-from-iterable)
+      - [32. `Array.of()` - Create from arguments](#32-arrayof---create-from-arguments)
+    - [G. ES2023+ IMMUTABLE METHODS](#g-es2023-immutable-methods)
+      - [33. `at()` - Access with negative indices](#33-at---access-with-negative-indices)
+      - [34. `toReversed()` - Non-mutating reverse](#34-toreversed---non-mutating-reverse)
+      - [35. `toSorted()` - Non-mutating sort](#35-tosorted---non-mutating-sort)
+      - [36. `toSpliced()` - Non-mutating splice](#36-tospliced---non-mutating-splice)
+      - [37. `with()` - Non-mutating replacement](#37-with---non-mutating-replacement)
+  - [Common Interview Traps](#common-interview-traps)
+    - [❌ Trap 1: Mutating vs Non-Mutating](#-trap-1-mutating-vs-non-mutating)
+    - [❌ Trap 2: forEach can't break](#-trap-2-foreach-cant-break)
+    - [❌ Trap 3: map creates new array (memory)](#-trap-3-map-creates-new-array-memory)
+    - [❌ Trap 4: Default sort is lexicographic](#-trap-4-default-sort-is-lexicographic)
+    - [❌ Trap 5: Sparse arrays](#-trap-5-sparse-arrays)
+  - [Real-World Examples](#real-world-examples)
+    - [Example 1: Data Transformation Pipeline](#example-1-data-transformation-pipeline)
+    - [Example 2: Grouping (SQL GROUP BY)](#example-2-grouping-sql-group-by)
+    - [Example 3: Remove Duplicates](#example-3-remove-duplicates)
+    - [Example 4: Pagination](#example-4-pagination)
+    - [Example 5: Flatten Nested Arrays](#example-5-flatten-nested-arrays)
+  - [Quick Reference Table](#quick-reference-table)
+  - [Advanced Patterns](#advanced-patterns)
+    - [Pattern 1: Method Chaining](#pattern-1-method-chaining)
+    - [Pattern 2: Immutable Updates](#pattern-2-immutable-updates)
+    - [Pattern 3: Array Destructuring](#pattern-3-array-destructuring)
+  - [Resources](#resources)
 
-## A. CASE CONVERSION
+## What is an Array?
 
-### toUpperCase() / toLowerCase()
-
-```js
-const str = "Hello World";
-console.log(str.toUpperCase()); // "HELLO WORLD"
-console.log(str.toLowerCase()); // "hello world"
-```
-
-### toLocaleUpperCase() / toLocaleLowerCase()
-
-```js
-const turkish = "istanbul";
-console.log(turkish.toLocaleUpperCase('tr-TR')); // "İSTANBUL"
-```
-
----
-
-## B. SEARCHING & CHECKING
-
-### indexOf(searchValue, fromIndex)
-
-```js
-const text = "hello world hello";
-console.log(text.indexOf("hello"));      // 0
-console.log(text.indexOf("hello", 1));   // 12
-console.log(text.indexOf("xyz"));        // -1
-```
-
-### lastIndexOf(searchValue, fromIndex)
-
-```js
-console.log(text.lastIndexOf("hello"));  // 12
-```
-
-### includes(searchString, position) ✨ ES6
-
-```js
-console.log("JavaScript".includes("Script")); // true
-console.log("JavaScript".includes("script")); // false
-console.log("JavaScript".includes("Java", 1)); // false
-```
-
-### startsWith(searchString, position) ✨ ES6
-
-```js
-const url = "https://example.com";
-console.log(url.startsWith("https"));     // true
-console.log(url.startsWith("example", 8)); // true
-```
-
-### endsWith(searchString, length) ✨ ES6
-
-```js
-const file = "image.png";
-console.log(file.endsWith(".png"));       // true
-console.log(file.endsWith("image", 5));   // true
-```
-
-### search(regexp)
+Arrays in JavaScript are **ordered collections** that can hold any data type. They are **zero-indexed**, **dynamically sized**, and internally stored as special objects.
 
 ```js
-const text = "The year is 2025";
-console.log(text.search(/\d+/));          // 12
-console.log(text.search("year"));         // 4
-```
-
-### match(regexp)
-
-```js
-const str = "cat, bat, rat";
-console.log(str.match(/[cbr]at/));        // ["cat"]
-console.log(str.match(/[cbr]at/g));       // ["cat", "bat", "rat"]
-```
-
-### matchAll(regexp) ✨ ES2020
-
-```js
-const text = "test1 test2";
-const matches = [...text.matchAll(/test(\d)/g)];
-console.log(matches[0][1]); // "1"
-console.log(matches[1][1]); // "2"
+const fruits = ['apple', 'banana', 'cherry'];
+//                 0        1         2
 ```
 
 ---
 
-## C. EXTRACTING SUBSTRINGS
-
-### slice(startIndex, endIndex)
+## Creating Arrays
 
 ```js
-const str = "JavaScript";
-console.log(str.slice(0, 4));    // "Java"
-console.log(str.slice(4));       // "Script"
-console.log(str.slice(-6));      // "Script"
-console.log(str.slice(-6, -2));  // "Scri"
-```
-
-### substring(startIndex, endIndex)
-
-```js
-const str = "JavaScript";
-console.log(str.substring(0, 4));  // "Java"
-console.log(str.substring(4, 0));  // "Java" (swaps)
-console.log(str.substring(-3));    // "JavaScript"
-```
-
-### substr(startIndex, length) ⚠️ DEPRECATED
-
-```js
-const str = "JavaScript";
-console.log(str.substr(4, 6));   // "Script"
-console.log(str.substr(-6, 4));  // "Scri"
-```
-
-### charAt(index)
-
-```js
-console.log("Hello"[0]);         // "H"
-console.log("Hello".charAt(0));  // "H"
-console.log("Hello".charAt(10)); // ""
-```
-
-### charCodeAt(index)
-
-```js
-console.log("A".charCodeAt(0));  // 65
-console.log("😀".charCodeAt(0)); // 55357
-```
-
-### codePointAt(index) ✨ ES6
-
-```js
-console.log("😀".codePointAt(0)); // 128512
-console.log("A".codePointAt(0));  // 65
-```
-
-### at(index) ✨ ES2022
-
-```js
-const str = "JavaScript";
-console.log(str.at(0));   // "J"
-console.log(str.at(-1));  // "t"
-console.log(str.at(-6));  // "S"
+const arr1 = [1, 2, 3];                    // Literal (most common)
+const arr2 = new Array(1, 2, 3);           // Constructor
+const arr3 = Array.of(1, 2, 3);            // Static method
+const arr4 = Array.from('hello');          // From iterable → ['h','e','l','l','o']
+const arr5 = Array.from({length: 5}, (_, i) => i); // [0, 1, 2, 3, 4]
 ```
 
 ---
 
-## D. MODIFYING STRINGS
+## Performance Characteristics
 
-### concat(...strings)
+| Operation | Time Complexity |
+|-----------|----------------|
+| Access by index | O(1) |
+| Push/Pop | O(1) |
+| Shift/Unshift | O(n) |
+| Splice | O(n) |
+| Search (indexOf, includes) | O(n) |
+
+---
+
+## Array Methods
+
+### A. MUTATING METHODS (Change original array)
+
+#### 1. `push()` - Add to end
 
 ```js
-const s1 = "Hello";
-const s2 = " World";
-console.log(s1.concat(s2, "!"));  // "Hello World!"
-// Better: use template literals
-console.log(`${s1}${s2}!`);       // "Hello World!"
+const arr = [1, 2];
+arr.push(3, 4);
+console.log(arr); // [1, 2, 3, 4]
+// Returns: new length (4)
 ```
 
-### repeat(count) ✨ ES6
+#### 2. `pop()` - Remove from end
 
 ```js
-console.log("Ha".repeat(3));      // "HaHaHa"
-console.log("─".repeat(10));      // "──────────"
+const arr = [1, 2, 3];
+const last = arr.pop();
+console.log(last); // 3
+console.log(arr);  // [1, 2]
+// Returns: removed element
 ```
 
-### padStart(targetLength, padString) ✨ ES2017
+#### 3. `unshift()` - Add to beginning
 
 ```js
-console.log("5".padStart(3, "0"));        // "005"
-console.log("hello".padStart(10, "*"));   // "*****hello"
+const arr = [2, 3];
+arr.unshift(0, 1);
+console.log(arr); // [0, 1, 2, 3]
+// Returns: new length
+// ⚠️ O(n) - reindexes all elements
 ```
 
-### padEnd(targetLength, padString) ✨ ES2017
+#### 4. `shift()` - Remove from beginning
 
 ```js
-console.log("5".padEnd(3, "0"));          // "500"
-console.log("hello".padEnd(10, "."));     // "hello....."
+const arr = [1, 2, 3];
+const first = arr.shift();
+console.log(first); // 1
+console.log(arr);   // [2, 3]
+// Returns: removed element
+```
+
+#### 5. `splice()` - Add/remove at any position
+
+```js
+const arr = [1, 2, 3, 4, 5];
+
+// Remove 2 elements from index 1
+arr.splice(1, 2);
+console.log(arr); // [1, 4, 5]
+
+// Insert at index 1
+arr.splice(1, 0, 'a', 'b');
+console.log(arr); // [1, 'a', 'b', 4, 5]
+
+// Replace
+arr.splice(2, 1, 'X');
+console.log(arr); // [1, 'a', 'X', 4, 5]
+```
+
+#### 6. `reverse()` - Reverse in place
+
+```js
+const arr = [1, 2, 3];
+arr.reverse();
+console.log(arr); // [3, 2, 1]
+```
+
+#### 7. `sort()` - Sort in place
+
+```js
+// ⚠️ Default: converts to strings
+const arr1 = [3, 1, 10, 2];
+arr1.sort();
+console.log(arr1); // [1, 10, 2, 3] ⚠️
+
+// ✅ Numeric sort
+const arr2 = [3, 1, 10, 2];
+arr2.sort((a, b) => a - b);
+console.log(arr2); // [1, 2, 3, 10]
+
+// Descending
+arr2.sort((a, b) => b - a); // [10, 3, 2, 1]
+```
+
+#### 8. `fill()` - Fill with static value
+
+```js
+const arr = [1, 2, 3, 4];
+arr.fill(0, 1, 3); // (value, start, end)
+console.log(arr); // [1, 0, 0, 4]
+
+// Create filled array
+const arr2 = new Array(5).fill('x'); // ['x', 'x', 'x', 'x', 'x']
+```
+
+#### 9. `copyWithin()` - Copy part to another location
+
+```js
+const arr = [1, 2, 3, 4, 5];
+arr.copyWithin(0, 3, 5); // (target, start, end)
+console.log(arr); // [4, 5, 3, 4, 5]
 ```
 
 ---
 
-## E. TRIMMING
+### B. NON-MUTATING METHODS (Return new array/value)
 
-### trim() ✨ ES5
+#### 10. `concat()` - Merge arrays
 
 ```js
-const str = "  hello  ";
-console.log(str.trim());          // "hello"
+const arr1 = [1, 2];
+const arr2 = [3, 4];
+const result = arr1.concat(arr2, [5, 6]);
+console.log(result); // [1, 2, 3, 4, 5, 6]
+
+// Modern alternative
+const result2 = [...arr1, ...arr2];
 ```
 
-### trimStart() / trimLeft() ✨ ES2019
+#### 11. `slice()` - Extract portion
 
 ```js
-console.log("  hello  ".trimStart()); // "hello  "
+const arr = [1, 2, 3, 4, 5];
+const sub = arr.slice(1, 4); // (start, end)
+console.log(sub); // [2, 3, 4]
+
+// Negative indices
+console.log(arr.slice(-2)); // [4, 5]
+
+// Clone array
+const clone = arr.slice();
 ```
 
-### trimEnd() / trimRight() ✨ ES2019
+#### 12. `join()` - Convert to string
 
 ```js
-console.log("  hello  ".trimEnd());   // "  hello"
+const arr = ['Hello', 'World'];
+console.log(arr.join(' '));  // "Hello World"
+console.log(arr.join('-'));  // "Hello-World"
 ```
 
----
-
-## F. REPLACING
-
-### replace(search, replacement)
+#### 13. `toString()` - Comma-separated string
 
 ```js
-const str = "cat cat cat";
-console.log(str.replace("cat", "dog"));       // "dog cat cat"
-console.log(str.replace(/cat/g, "dog"));      // "dog dog dog"
-```
-
-### replaceAll(search, replacement) ✨ ES2021
-
-```js
-const str = "cat cat cat";
-console.log(str.replaceAll("cat", "dog"));    // "dog dog dog"
-```
-
-### With callback
-
-```js
-const str = "hello world";
-const result = str.replace(/\w+/g, match => match.toUpperCase());
-console.log(result); // "HELLO WORLD"
+const arr = [1, 2, 3];
+console.log(arr.toString()); // "1,2,3"
 ```
 
 ---
 
-## G. SPLITTING
+### C. ITERATION METHODS
 
-### split(separator, limit)
+#### 14. `forEach()` - Execute function for each
 
 ```js
-const csv = "apple,banana,cherry";
-console.log(csv.split(","));              // ["apple", "banana", "cherry"]
-console.log(csv.split(",", 2));           // ["apple", "banana"]
-console.log("hello".split(""));           // ["h", "e", "l", "l", "o"]
+const arr = [1, 2, 3];
+arr.forEach((item, index) => {
+  console.log(`${index}: ${item}`);
+});
+// ⚠️ Cannot break/return early
+```
 
-const text = "a-b-c";
-console.log(text.split(/-/));             // ["a", "b", "c"]
+#### 15. `map()` - Transform each element
+
+```js
+const arr = [1, 2, 3];
+const doubled = arr.map(x => x * 2);
+console.log(doubled); // [2, 4, 6]
+```
+
+#### 16. `filter()` - Keep matching elements
+
+```js
+const arr = [1, 2, 3, 4, 5];
+const evens = arr.filter(x => x % 2 === 0);
+console.log(evens); // [2, 4]
+```
+
+#### 17. `reduce()` - Reduce to single value
+
+```js
+// Sum
+const arr = [1, 2, 3, 4];
+const sum = arr.reduce((acc, curr) => acc + curr, 0);
+console.log(sum); // 10
+
+// Object grouping
+const people = [
+  {name: 'Alice', age: 25},
+  {name: 'Bob', age: 30},
+  {name: 'Charlie', age: 25}
+];
+const grouped = people.reduce((acc, person) => {
+  acc[person.age] = acc[person.age] || [];
+  acc[person.age].push(person.name);
+  return acc;
+}, {});
+// {25: ['Alice', 'Charlie'], 30: ['Bob']}
+```
+
+#### 18. `reduceRight()` - Reduce from right
+
+```js
+const arr = ['a', 'b', 'c'];
+const result = arr.reduceRight((acc, curr) => acc + curr);
+console.log(result); // "cba"
+```
+
+#### 19. `find()` - First matching element
+
+```js
+const arr = [5, 12, 8, 130, 44];
+const found = arr.find(x => x > 10);
+console.log(found); // 12
+```
+
+#### 20. `findIndex()` - Index of first match
+
+```js
+const arr = [5, 12, 8, 130, 44];
+const index = arr.findIndex(x => x > 10);
+console.log(index); // 1
+```
+
+#### 21. `findLast()` - Last matching element (ES2023)
+
+```js
+const arr = [5, 12, 8, 130, 44];
+const found = arr.findLast(x => x > 10);
+console.log(found); // 44
+```
+
+#### 22. `findLastIndex()` - Index of last match (ES2023)
+
+```js
+const arr = [5, 12, 8, 130, 44];
+const index = arr.findLastIndex(x => x > 10);
+console.log(index); // 4
+```
+
+#### 23. `some()` - Check if ANY matches
+
+```js
+const arr = [1, 2, 3, 4];
+console.log(arr.some(x => x > 3)); // true
+```
+
+#### 24. `every()` - Check if ALL match
+
+```js
+const arr = [2, 4, 6, 8];
+console.log(arr.every(x => x % 2 === 0)); // true
 ```
 
 ---
 
-## H. LOCALIZATION
+### D. SEARCH METHODS
 
-### localeCompare(compareString, locales, options)
+#### 25. `indexOf()` - First index of element
 
 ```js
-const a = "ä";
-const b = "z";
-console.log(a.localeCompare(b, 'de'));    // -1 (ä < z in German)
-console.log(a.localeCompare(b, 'sv'));    // 1 (ä > z in Swedish)
+const arr = [1, 2, 3, 2, 1];
+console.log(arr.indexOf(2));    // 1
+console.log(arr.indexOf(2, 2)); // 3 (start from index 2)
+console.log(arr.indexOf(5));    // -1 (not found)
+```
 
-// Numeric sorting
-console.log("2".localeCompare("10"));                    // 1
-console.log("2".localeCompare("10", undefined, {numeric: true})); // -1
+#### 26. `lastIndexOf()` - Last index of element
+
+```js
+const arr = [1, 2, 3, 2, 1];
+console.log(arr.lastIndexOf(2)); // 3
+```
+
+#### 27. `includes()` - Check existence (ES2016)
+
+```js
+const arr = [1, 2, 3, NaN];
+console.log(arr.includes(2));   // true
+console.log(arr.includes(NaN)); // true ✅ (indexOf can't find NaN)
 ```
 
 ---
 
-## I. CONVERSION (STATIC METHODS)
+### E. FLAT & TRANSFORMATION
 
-### String.fromCharCode(...codes)
+#### 28. `flat()` - Flatten nested arrays (ES2019)
 
 ```js
-console.log(String.fromCharCode(72, 105)); // "Hi"
+const arr = [1, [2, [3, [4]]]];
+console.log(arr.flat());     // [1, 2, [3, [4]]]
+console.log(arr.flat(2));    // [1, 2, 3, [4]]
+console.log(arr.flat(Infinity)); // [1, 2, 3, 4]
 ```
 
-### String.fromCodePoint(...codes) ✨ ES6
+#### 29. `flatMap()` - Map + flatten (ES2019)
 
 ```js
-console.log(String.fromCodePoint(128512)); // "😀"
-```
-
-### String.raw ✨ ES6 (Template Tag)
-
-```js
-console.log(String.raw`C:\new\folder`);    // "C:\new\folder"
-console.log(`C:\new\folder`);              // "C:
-ew\folder"
+const arr = [1, 2, 3];
+const result = arr.flatMap(x => [x, x * 2]);
+console.log(result); // [1, 2, 2, 4, 3, 6]
 ```
 
 ---
 
-## J. ITERATION
+### F. STATIC METHODS
 
-### [Symbol.iterator]() ✨ ES6
+#### 30. `Array.isArray()` - Check if array
 
 ```js
-const str = "hi";
-for (const char of str) {
-  console.log(char); // "h", "i"
+console.log(Array.isArray([1, 2]));     // true
+console.log(Array.isArray('hello'));    // false
+```
+
+#### 31. `Array.from()` - Create from iterable
+
+```js
+// From string
+console.log(Array.from('hello')); // ['h', 'e', 'l', 'l', 'o']
+
+// With mapping
+console.log(Array.from([1, 2, 3], x => x * 2)); // [2, 4, 6]
+
+// Create range
+const range = Array.from({length: 5}, (_, i) => i); // [0, 1, 2, 3, 4]
+```
+
+#### 32. `Array.of()` - Create from arguments
+
+```js
+console.log(Array.of(7));       // [7]
+console.log(new Array(7));      // [empty × 7] ⚠️
+```
+
+---
+
+### G. ES2023+ IMMUTABLE METHODS
+
+#### 33. `at()` - Access with negative indices
+
+```js
+const arr = [1, 2, 3, 4, 5];
+console.log(arr.at(-1));  // 5 (last)
+console.log(arr.at(-2));  // 4
+```
+
+#### 34. `toReversed()` - Non-mutating reverse
+
+```js
+const arr = [1, 2, 3];
+const reversed = arr.toReversed();
+console.log(reversed); // [3, 2, 1]
+console.log(arr);      // [1, 2, 3] ✅ unchanged
+```
+
+#### 35. `toSorted()` - Non-mutating sort
+
+```js
+const arr = [3, 1, 2];
+const sorted = arr.toSorted();
+console.log(sorted); // [1, 2, 3]
+console.log(arr);    // [3, 1, 2] ✅ unchanged
+```
+
+#### 36. `toSpliced()` - Non-mutating splice
+
+```js
+const arr = [1, 2, 3, 4];
+const spliced = arr.toSpliced(1, 2, 'a', 'b');
+console.log(spliced); // [1, 'a', 'b', 4]
+console.log(arr);     // [1, 2, 3, 4] ✅ unchanged
+```
+
+#### 37. `with()` - Non-mutating replacement
+
+```js
+const arr = [1, 2, 3];
+const newArr = arr.with(1, 99);
+console.log(newArr); // [1, 99, 3]
+console.log(arr);    // [1, 2, 3] ✅ unchanged
+```
+
+---
+
+## Common Interview Traps
+
+### ❌ Trap 1: Mutating vs Non-Mutating
+
+```js
+const arr = [1, 2, 3];
+arr.sort(); // ❌ Mutates original!
+
+const sorted = arr.slice().sort(); // ✅ Safe
+const sorted2 = arr.toSorted();    // ✅ ES2023
+```
+
+### ❌ Trap 2: forEach can't break
+
+```js
+// ❌ Won't work
+arr.forEach(x => {
+  if (x === 5) break; // SyntaxError!
+});
+
+// ✅ Use for...of instead
+for (const x of arr) {
+  if (x === 5) break;
+}
+```
+
+### ❌ Trap 3: map creates new array (memory)
+
+```js
+// ❌ Wasteful
+arr.map(x => console.log(x));
+
+// ✅ Use forEach
+arr.forEach(x => console.log(x));
+```
+
+### ❌ Trap 4: Default sort is lexicographic
+
+```js
+[10, 2, 1].sort();              // ❌ [1, 10, 2]
+[10, 2, 1].sort((a, b) => a - b); // ✅ [1, 2, 10]
+```
+
+### ❌ Trap 5: Sparse arrays
+
+```js
+const arr = [1, , 3];
+arr.forEach(x => console.log(x)); // Skips index 1
+arr.map(x => x * 2);              // [2, empty, 6]
+```
+
+---
+
+## Real-World Examples
+
+### Example 1: Data Transformation Pipeline
+
+```js
+const users = [
+  {name: 'Alice', age: 25, active: true},
+  {name: 'Bob', age: 17, active: false},
+  {name: 'Charlie', age: 30, active: true}
+];
+
+const result = users
+  .filter(u => u.active && u.age >= 18)
+  .map(u => u.name.toUpperCase())
+  .sort();
+
+console.log(result); // ['ALICE', 'CHARLIE']
+```
+
+### Example 2: Grouping (SQL GROUP BY)
+
+```js
+const sales = [
+  {product: 'A', amount: 100},
+  {product: 'B', amount: 200},
+  {product: 'A', amount: 150}
+];
+
+const totals = sales.reduce((acc, sale) => {
+  acc[sale.product] = (acc[sale.product] || 0) + sale.amount;
+  return acc;
+}, {});
+
+console.log(totals); // {A: 250, B: 200}
+```
+
+### Example 3: Remove Duplicates
+
+```js
+const arr = [1, 2, 2, 3, 3, 4];
+const unique = [...new Set(arr)];
+console.log(unique); // [1, 2, 3, 4]
+```
+
+### Example 4: Pagination
+
+```js
+function paginate(arr, page, size) {
+  return arr.slice((page - 1) * size, page * size);
 }
 
-const iterator = str[Symbol.iterator]();
-console.log(iterator.next()); // {value: "h", done: false}
-console.log(iterator.next()); // {value: "i", done: false}
-console.log(iterator.next()); // {value: undefined, done: true}
+const items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+console.log(paginate(items, 2, 3)); // [4, 5, 6]
+```
+
+### Example 5: Flatten Nested Arrays
+
+```js
+const nested = [[1, 2], [3, 4], [5, 6]];
+const flat = nested.flat(); // [1, 2, 3, 4, 5, 6]
+
+// Or with reduce
+const flat2 = nested.reduce((acc, arr) => acc.concat(arr), []);
 ```
 
 ---
 
-## PRACTICAL USE CASES
+## Quick Reference Table
 
-### Email Validation
+| Category | Methods |
+|----------|---------|
+| **Add/Remove** | push, pop, shift, unshift, splice |
+| **Transform** | map, flatMap, flat, reverse, sort, fill |
+| **Filter** | filter, slice |
+| **Search** | find, findIndex, indexOf, includes, some, every |
+| **Iterate** | forEach, map, filter, reduce, reduceRight |
+| **Combine** | concat, join |
+| **Check** | isArray, includes, some, every |
+| **Immutable** | toReversed, toSorted, toSpliced, with, at |
+
+---
+
+## Advanced Patterns
+
+### Pattern 1: Method Chaining
 
 ```js
-const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-console.log(isValidEmail("test@example.com")); // true
+const result = arr
+  .filter(x => x > 0)
+  .map(x => x * 2)
+  .reduce((sum, x) => sum + x, 0);
 ```
 
-### URL Slug Generator
+### Pattern 2: Immutable Updates
 
 ```js
-const createSlug = str => str
-  .toLowerCase()
-  .trim()
-  .replace(/[^\w\s-]/g, '')
-  .replace(/[\s_-]+/g, '-')
-  .replace(/^-+|-+$/g, '');
+// Add item
+const newArr = [...arr, newItem];
 
-console.log(createSlug("Hello World! 123")); // "hello-world-123"
+// Remove item at index
+const removed = [...arr.slice(0, i), ...arr.slice(i + 1)];
+
+// Update item at index
+const updated = arr.map((item, idx) => idx === i ? newValue : item);
 ```
 
-### Capitalize Words
+### Pattern 3: Array Destructuring
 
 ```js
-const capitalize = str => str
-  .split(' ')
-  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(' ');
-
-console.log(capitalize("hello world")); // "Hello World"
-```
-
-### Truncate with Ellipsis
-
-```js
-const truncate = (str, maxLen) => 
-  str.length > maxLen ? str.slice(0, maxLen - 3) + '...' : str;
-
-console.log(truncate("This is a long text", 10)); // "This is..."
-```
-
-### Count Word Frequency
-
-```js
-const wordFrequency = str => {
-  const words = str.toLowerCase().match(/\b\w+\b/g);
-  return words.reduce((acc, word) => {
-    acc[word] = (acc[word] || 0) + 1;
-    return acc;
-  }, {});
-};
-
-console.log(wordFrequency("hello world hello")); 
-// { hello: 2, world: 1 }
+const [first, second, ...rest] = [1, 2, 3, 4, 5];
+console.log(first);  // 1
+console.log(second); // 2
+console.log(rest);   // [3, 4, 5]
 ```
 
 ---
 
-## COMMON INTERVIEW TRAPS
+## Resources
 
-### Trap 1: Strings are mutable
-
-❌ WRONG: Strings can be modified in place
-✅ CORRECT: Strings are immutable – methods return new strings
-
-### Trap 2: substr() is safe to use
-
-❌ WRONG: substr() is recommended
-✅ CORRECT: substr() is deprecated – use slice() or substring()
-
-### Trap 3: substring(-1) works like slice(-1)
-
-❌ WRONG: substring(-1) returns last character
-✅ CORRECT: substring() treats negative as 0
-
-### Trap 4: indexOf() returns boolean
-
-❌ WRONG: indexOf() returns true/false
-✅ CORRECT: indexOf() returns number (-1 if not found)
-
-### Trap 5: split("") works correctly with emoji
-
-❌ WRONG: "😀".split("") returns ["😀"]
-✅ CORRECT: Use Array.from() or [...str] for Unicode
-
-### Trap 6: replace() replaces all matches
-
-❌ WRONG: str.replace("cat", "dog") replaces all "cat"
-✅ CORRECT: Only replaces first – use replaceAll() or /g flag
-
----
-
-## PERFORMANCE TIPS
-
-### String Concatenation
-
-```js
-// ❌ SLOW (creates many intermediate strings)
-let result = "";
-for (let i = 0; i < 1000; i++) {
-  result += "text";
-}
-
-// ✅ FAST (uses array join)
-const parts = [];
-for (let i = 0; i < 1000; i++) {
-  parts.push("text");
-}
-const result = parts.join("");
-
-// ✅ EVEN BETTER (uses repeat)
-const result = "text".repeat(1000);
-```
-
----
-
-## QUICK REFERENCE TABLE
-
-| Method | Returns | Mutates? | ES Version |
-|--------|---------|----------|------------|
-| toLowerCase() | string | No | ES1 |
-| toUpperCase() | string | No | ES1 |
-| charAt(i) | string | No | ES1 |
-| charCodeAt(i) | number | No | ES1 |
-| indexOf(s) | number | No | ES1 |
-| lastIndexOf(s) | number | No | ES1 |
-| slice(s, e) | string | No | ES3 |
-| substring(s, e) | string | No | ES1 |
-| split(sep) | array | No | ES1 |
-| concat(...s) | string | No | ES1 |
-| replace(s, r) | string | No | ES1 |
-| search(re) | number | No | ES3 |
-| match(re) | array/null | No | ES3 |
-| trim() | string | No | ES5 |
-| repeat(n) | string | No | ES6 |
-| startsWith(s) | boolean | No | ES6 |
-| endsWith(s) | boolean | No | ES6 |
-| includes(s) | boolean | No | ES6 |
-| padStart(l, s) | string | No | ES2017 |
-| padEnd(l, s) | string | No | ES2017 |
-| trimStart() | string | No | ES2019 |
-| trimEnd() | string | No | ES2019 |
-| matchAll(re) | iterator | No | ES2020 |
-| replaceAll(s, r) | string | No | ES2021 |
-| at(i) | string | No | ES2022 |
-
----
-
-## KEY TAKEAWAYS
-
-1. **Strings are immutable** – all methods return new strings
-2. **Use modern methods** – includes(), startsWith(), endsWith() over indexOf()
-3. **Performance matters** – avoid string concatenation in loops
-4. **Unicode awareness** – use codePointAt(), Array.from() for emoji/symbols
-5. **Regex is powerful** – combine with match(), replace(), search()
-6. **Template literals** – preferred over concat() for readability
-7. **Deprecated methods** – avoid substr(), use slice() instead
+- [MDN Array Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)
+- ECMAScript Specifications
+- JavaScript.info - Arrays
 
 ---
