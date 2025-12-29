@@ -68,6 +68,7 @@
     - [Example 4: Pagination](#example-4-pagination)
     - [Example 5: Flatten Nested Arrays](#example-5-flatten-nested-arrays)
   - [Quick Reference Table](#quick-reference-table)
+  - [Method Return Values Reference](#method-return-values-reference)
   - [Advanced Patterns](#advanced-patterns)
     - [Pattern 1: Method Chaining](#pattern-1-method-chaining)
     - [Pattern 2: Immutable Updates](#pattern-2-immutable-updates)
@@ -627,6 +628,51 @@ const flat2 = nested.reduce((acc, arr) => acc.concat(arr), []);
 | **Combine** | concat, join |
 | **Check** | isArray, includes, some, every |
 | **Immutable** | toReversed, toSorted, toSpliced, with, at |
+
+---
+
+## Method Return Values Reference
+
+| Method | Returns | Mutates Original? | Example Return |
+|--------|---------|-------------------|----------------|
+| **push()** | New length | ✅ Yes | `4` |
+| **pop()** | Removed element | ✅ Yes | `3` |
+| **shift()** | Removed element | ✅ Yes | `1` |
+| **unshift()** | New length | ✅ Yes | `5` |
+| **splice()** | Array of removed elements | ✅ Yes | `[2, 3]` |
+| **reverse()** | Reversed array (same ref) | ✅ Yes | `[3, 2, 1]` |
+| **sort()** | Sorted array (same ref) | ✅ Yes | `[1, 2, 3]` |
+| **fill()** | Modified array (same ref) | ✅ Yes | `[0, 0, 0]` |
+| **copyWithin()** | Modified array (same ref) | ✅ Yes | `[4, 5, 3]` |
+| **concat()** | New array | ❌ No | `[1, 2, 3, 4]` |
+| **slice()** | New array | ❌ No | `[2, 3, 4]` |
+| **join()** | String | ❌ No | `"1,2,3"` |
+| **toString()** | String | ❌ No | `"1,2,3"` |
+| **toLocaleString()** | Localized string | ❌ No | `"1,000"` |
+| **forEach()** | \`undefined\` | ❌ No | `undefined` |
+| **map()** | New array | ❌ No | `[2, 4, 6]` |
+| **filter()** | New array | ❌ No | `[2, 4]` |
+| **reduce()** | Single value (any type) | ❌ No | `10` or `{}` |
+| **reduceRight()** | Single value (any type) | ❌ No | `"cba"` |
+| **find()** | Element or \`undefined\` | ❌ No | `12` |
+| **findIndex()** | Index or \`-1\` | ❌ No | `3` |
+| **findLast()** | Element or \`undefined\` | ❌ No | `44` |
+| **findLastIndex()** | Index or \`-1\` | ❌ No | `4` |
+| **some()** | Boolean | ❌ No | `true` |
+| **every()** | Boolean | ❌ No | `false` |
+| **indexOf()** | Index or `-1` | ❌ No | `2` |
+| **lastIndexOf()** | Index or `-1` | ❌ No | `3` |
+| **includes()** | Boolean | ❌ No | `true` |
+| **flat()** | New flattened array | ❌ No | `[1, 2, 3]` |
+| **flatMap()** | New flattened array | ❌ No | `[1, 2, 2, 4]` |
+| **Array.isArray()** | Boolean | ❌ No | `true` |
+| **Array.from()** | New array | ❌ No | `['h', 'e']` |
+| **Array.of()** | New array |❌ No | `[7]` |
+| **at()** | Element or `undefined` | ❌ No | `5` |
+| **toReversed()** | New reversed array | ❌ No | `[3, 2, 1]` |
+| **toSorted()** | New sorted array | ❌ No | `[1, 2, 3]` |
+| **toSpliced()** | New array | ❌ No | `[1, 'a', 4]` |
+| **with()** | New array | ❌ No | `[1, 99, 3]` |
 
 ---
 
