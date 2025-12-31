@@ -2,15 +2,43 @@
 <!-- markdownlint-disable MD060 -->
 <!-- markdownlint-disable MD024 -->
 
-# JavaScript Data Types — Complete Breakdown
+# JavaScript Data Types
 
 ---
 
-## Table Of contents
+## Table Of Contents
 
-- [Initial Understanding](#initial-understanding)
-- [Beginner Explanation](#beginner-explanation)
-- [Advanced Explanation](#advanced-explanation)
+- [JavaScript Data Types](#javascript-data-types)
+  - [Table Of Contents](#table-of-contents)
+  - [Initial Understanding](#initial-understanding)
+  - [Beginner Explanation](#beginner-explanation)
+  - [Advanced Explanation](#advanced-explanation)
+    - [Memory Model](#memory-model)
+    - [Type Checking](#type-checking)
+  - [All Data Types with Examples](#all-data-types-with-examples)
+    - [**1. Number**](#1-number)
+    - [**2. String**](#2-string)
+    - [**3. Boolean**](#3-boolean)
+    - [**4. Undefined**](#4-undefined)
+    - [**5. Null**](#5-null)
+    - [**6. Symbol**](#6-symbol)
+    - [**7. BigInt**](#7-bigint)
+    - [**8. Object**](#8-object)
+  - [Common Interview Traps](#common-interview-traps)
+    - [**Trap 1: typeof null**](#trap-1-typeof-null)
+    - [**Trap 2: NaN weirdness**](#trap-2-nan-weirdness)
+    - [**Trap 3: Array type check**](#trap-3-array-type-check)
+    - [**Trap 4: Floating point precision**](#trap-4-floating-point-precision)
+    - [**Trap 5: Loose vs Strict Equality**](#trap-5-loose-vs-strict-equality)
+  - [Real-World Use Cases](#real-world-use-cases)
+    - [**1. Type checking before operations**](#1-type-checking-before-operations)
+    - [**2. Symbol for private properties**](#2-symbol-for-private-properties)
+    - [**3. BigInt for cryptography**](#3-bigint-for-cryptography)
+    - [**4. Null for intentional reset**](#4-null-for-intentional-reset)
+  - [Quick Reference Table](#quick-reference-table)
+  - [Bonus: Type Conversion](#bonus-type-conversion)
+    - [**Implicit Coercion**](#implicit-coercion)
+    - [**Explicit Conversion**](#explicit-conversion)
 
 ## Initial Understanding
 
@@ -373,22 +401,22 @@ cachedData = null; // clear cache
 
 ## Quick Reference Table
 
-| Type      | Example     | typeof        | Mutable | Stored |
-| --------- | ----------- | ------------- | ------- | ------ |
-| `Number`    | `42`        | `"number"`    | `No`      | `Stack`  |
-| `String`    | `"hello"`   | `"string"`    | `No`      | `Stack`  |
-| `Boolean`   | `true`      | `"boolean"`   | `No`      | `Stack`  |
-| `Undefined` | `undefined` | `"undefined"` | `No`      | `Stack`  |
-| `Null`      | `null`      | `"object"`⚠️  | `No`      | `Stack`  |
-| `Symbol`    | `Symbol()`  | `"symbol"`    | `No`      | `Stack`  |
-| `BigInt`    | `123n`      | `"bigint"`    | `No`      | `Stack`  |
-| `Object`    | `{ a: 1 }`  | `"object"`    | `Yes`     | `Heap`  |
+| Type        | Example     | typeof        | Mutable | Stored  |
+| ----------- | ----------- | ------------- | ------- | ------- |
+| `Number`    | `42`        | `"number"`    | `No`    | `Stack` |
+| `String`    | `"hello"`   | `"string"`    | `No`    | `Stack` |
+| `Boolean`   | `true`      | `"boolean"`   | `No`    | `Stack` |
+| `Undefined` | `undefined` | `"undefined"` | `No`    | `Stack` |
+| `Null`      | `null`      | `"object"`⚠️   | `No`    | `Stack` |
+| `Symbol`    | `Symbol()`  | `"symbol"`    | `No`    | `Stack` |
+| `BigInt`    | `123n`      | `"bigint"`    | `No`    | `Stack` |
+| `Object`    | `{ a: 1 }`  | `"object"`    | `Yes`   | `Heap`  |
 
 ---
 
 ## Bonus: Type Conversion
 
-### Implicit Coercion
+### **Implicit Coercion**
 
 ```js
 console.log("5" + 3); // "53" (string concatenation)
@@ -399,7 +427,7 @@ console.log(null + 1); // 1
 console.log(undefined + 1); // NaN
 ```
 
-### Explicit Conversion
+### **Explicit Conversion**
 
 ```js
 // To Number
