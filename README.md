@@ -2,950 +2,420 @@
 <!-- markdownlint-disable MD060 -->
 <!-- markdownlint-disable MD024 -->
 
-# JavaScript Classes - Complete Guide
+# JavaScript Data Types — Complete Breakdown
 
 ---
 
-## Table of Contents
+## Table Of contents
 
-- [JavaScript Classes - Complete Guide](#javascript-classes---complete-guide)
-  - [Table of Contents](#table-of-contents)
-  - [**What is a Class?**](#what-is-a-class)
-  - [**1. Creating a Basic Class**](#1-creating-a-basic-class)
-  - [**2. The `new` Keyword**](#2-the-new-keyword)
-  - [**3. Constructor Method**](#3-constructor-method)
-  - [**4. Instance Methods**](#4-instance-methods)
-  - [**5. The `extends` Keyword**](#5-the-extends-keyword)
-  - [**6. The `super` Keyword**](#6-the-super-keyword)
-    - [A) Using `super()` in Constructor](#a-using-super-in-constructor)
-    - [B) Using `super` to Call Parent Methods](#b-using-super-to-call-parent-methods)
-  - [**7. Static Methods**](#7-static-methods)
-    - [Factory Method Example](#factory-method-example)
-  - [**8. Getters and Setters**](#8-getters-and-setters)
-    - [`Getter` (`get`)](#getter-get)
-    - [`Setter` (`set`)](#setter-set)
-  - [**9. Private Properties \& Methods**](#9-private-properties--methods)
-    - [`Private Fields`](#private-fields)
-    - [`Private Methods`](#private-methods)
-  - [**10. Protected Properties**](#10-protected-properties)
-  - [**11. Complete Example**](#11-complete-example)
-  - [**12. Summary Table**](#12-summary-table)
-  - [**13. `Public` vs `Private` vs `Protected`**](#13-public-vs-private-vs-protected)
-  - [**14. `Instance` vs `Static`**](#14-instance-vs-static)
-  - [**15. Common Mistakes**](#15-common-mistakes)
-    - [`Mistake 1`: Forgetting `new`](#mistake-1-forgetting-new)
-    - [`Mistake 2`: Not calling `super()` first](#mistake-2-not-calling-super-first)
-    - [`Mistake 3`: Accessing private outside class](#mistake-3-accessing-private-outside-class)
-    - [`Mistake 4`: Using `this` before `super()`](#mistake-4-using-this-before-super)
-    - [`Mistake 5`: Multiple constructors](#mistake-5-multiple-constructors)
-  - [**16. Quick Reference**](#16-quick-reference)
-    - [Basic Class Structure](#basic-class-structure)
-    - [Inheritance Structure](#inheritance-structure)
-  - [**17. Real-World Examples**](#17-real-world-examples)
-    - [`Example 1`: User Authentication System](#example-1-user-authentication-system)
-    - [`Example 2`: Shopping Cart](#example-2-shopping-cart)
-    - [`Example 3`: Employee Management](#example-3-employee-management)
-  - [**18. Interview Tips**](#18-interview-tips)
-  - [**Key Takeaways**](#key-takeaways)
+- [Initial Understanding](#initial-understanding)
+- [Beginner Explanation](#beginner-explanation)
+- [Advanced Explanation](#advanced-explanation)
 
-## **What is a Class?**
+## Initial Understanding
 
-A **class** is a blueprint for creating objects with predefined properties and methods.
+JavaScript has **8 data types**, divided into two categories:
 
-**Think of it:** Class = Cookie Cutter | Objects = Cookies
+- **Primitive Types** (7): Immutable, stored by value
+- **Non-Primitive Type** (1): Mutable, stored by reference
 
 ---
 
-## **1. Creating a Basic Class**
+## Beginner Explanation
 
-```javascript
-class Person {
-  constructor(name, age) {
-    this.name = name;
-    this.age = age;
-  }
-  
-  greet() {
-    console.log(`Hello, my name is ${this.name}`);
-  }
-}
+**Primitives** are simple values — think of them as atoms.  
+**Objects** are complex structures — think of them as molecules made of atoms.
 
-const person1 = new Person('Alice', 25);
-person1.greet(); // "Hello, my name is Alice"
-```
+**Key difference:**
 
-**Key Parts:**
+- `Primitives` are **copied by value**
+- `Objects` are **copied by reference**
 
-- `class Person` → Declares class
-- `constructor()` → Runs when creating object
-- `this.name` → Object property
-- `greet()` → Object method
+```js
+let a = 5;
+let b = a; // copy value
+b = 10;
+console.log(a); // 5 (unchanged)
 
----
-
-## **2. The `new` Keyword**
-
-Creates a new instance (object) from a class.
-
-```javascript
-const person = new Person('Alice', 25); // ✅ Correct
-const person = Person('Alice', 25);     // ❌ TypeError
-```
-
-**What `new` does:**
-
-1. Creates empty object `{}`
-2. Sets prototype
-3. Runs constructor with `this`
-4. Returns new object
-
----
-
-## **3. Constructor Method**
-
-Special method that initializes objects.
-
-```javascript
-class Car {
-  constructor(brand, model, year) {
-    this.brand = brand;
-    this.model = model;
-    this.year = year;
-    this.speed = 0; // default value
-  }
-}
-
-const myCar = new Car('Tesla', 'Model 3', 2023);
-console.log(myCar.brand); // "Tesla"
-```
-
-**Rules:**
-
-- Only ONE constructor per class
-- Runs automatically with `new`
-- Optional (JavaScript adds empty one if missing)
-
----
-
-## **4. Instance Methods**
-
-Methods that belong to each object.
-
-```javascript
-class Calculator {
-  constructor() {
-    this.result = 0;
-  }
-  
-  add(num) {
-    this.result += num;
-  }
-  
-  subtract(num) {
-    this.result -= num;
-  }
-  
-  getResult() {
-    return this.result;
-  }
-}
-
-const calc = new Calculator();
-calc.add(10);
-calc.subtract(3);
-console.log(calc.getResult()); // 7
+let obj1 = { x: 5 };
+let obj2 = obj1; // copy reference
+obj2.x = 10;
+console.log(obj1.x); // 10 (changed!)
 ```
 
 ---
 
-## **5. The `extends` Keyword**
+## Advanced Explanation
 
-Allows a class to **inherit** from another class.
+### Memory Model
 
-```javascript
-// Parent class
-class Animal {
-  constructor(name) {
-    this.name = name;
-  }
-  
-  speak() {
-    console.log(`${this.name} makes a sound`);
-  }
-}
+- **Primitives** are stored in the **stack** (fixed size, fast access)
+- **Objects** are stored in the **heap** (dynamic size), with references in the stack
 
-// Child class
-class Dog extends Animal {
-  bark() {
-    console.log(`${this.name} barks: Woof!`);
-  }
-}
+### Type Checking
 
-const dog = new Dog('Buddy');
-dog.speak(); // Inherited from Animal
-dog.bark();  // Own method
-```
-
-**Key Points:**
-
-- `extends` = Inheritance
-- Child gets all parent properties/methods
-- Child can add its own methods
-
----
-
-## **6. The `super` Keyword**
-
-Calls parent class constructor and methods.
-
-### A) Using `super()` in Constructor
-
-```javascript
-class Animal {
-  constructor(name) {
-    this.name = name;
-  }
-}
-
-class Dog extends Animal {
-  constructor(name, breed) {
-    super(name);      // ✅ Call parent first
-    this.breed = breed;
-  }
-}
-
-const dog = new Dog('Buddy', 'Golden Retriever');
-```
-
-**IMPORTANT RULE:**
-
-```javascript
-// ❌ WRONG
-class Dog extends Animal {
-  constructor(name, breed) {
-    this.breed = breed; // Error!
-    super(name);
-  }
-}
-
-// ✅ CORRECT
-class Dog extends Animal {
-  constructor(name, breed) {
-    super(name);        // Call super FIRST
-    this.breed = breed;
-  }
-}
-```
-
-### B) Using `super` to Call Parent Methods
-
-```javascript
-class Animal {
-  speak() {
-    return `${this.name} makes a sound`;
-  }
-}
-
-class Dog extends Animal {
-  speak() {
-    const parentMsg = super.speak();
-    return `${parentMsg} and barks`;
-  }
-}
-
-const dog = new Dog('Buddy');
-dog.name = 'Buddy';
-console.log(dog.speak());
-// "Buddy makes a sound and barks"
+```js
+typeof 42;           // "number"
+typeof "hello";      // "string"
+typeof true;         // "boolean"
+typeof undefined;    // "undefined"
+typeof Symbol();     // "symbol"
+typeof 100n;         // "bigint"
+typeof null;         // "object" ⚠️ (historical bug!)
+typeof {};           // "object"
+typeof [];           // "object" (arrays are objects)
+typeof function(){}; // "function" (special object)
 ```
 
 ---
 
-## **7. Static Methods**
+## All Data Types with Examples
 
-Belong to the **class itself**, not instances.
+### **1. Number**
 
-```javascript
-class MathHelper {
-  static add(a, b) {
-    return a + b;
-  }
-  
-  static multiply(a, b) {
-    return a * b;
-  }
-}
+**Represents integers and floating-point numbers**
 
-// ✅ Call on class
-console.log(MathHelper.add(5, 3)); // 8
+```js
+let int = 42;
+let float = 3.14;
+let negative = -100;
+let scientific = 5e3; // 5000
+let infinity = Infinity;
+let notANumber = NaN;
 
-// ❌ Cannot call on instance
-const helper = new MathHelper();
-console.log(helper.add(5, 3)); // TypeError
+console.log(typeof 42); // "number"
+console.log(0.1 + 0.2 === 0.3); // false ⚠️ (floating point precision)
+console.log(Number.MAX_SAFE_INTEGER); // 9007199254740991
 ```
 
-### Factory Method Example
+**Interview Traps:**
 
-```javascript
-class User {
-  constructor(name, role) {
-    this.name = name;
-    this.role = role;
-  }
-  
-  static createAdmin(name) {
-    return new User(name, 'admin');
-  }
-  
-  static createGuest(name) {
-    return new User(name, 'guest');
-  }
-}
-
-const admin = User.createAdmin('Alice');
-const guest = User.createGuest('Bob');
-```
-
-**Use Cases:**
-
-- Utility functions
-- Factory methods
-- Constants
+- `NaN === NaN` → `false` (use `Number.isNaN()` instead)
+- `typeof NaN` → `"number"`
+- `1/0` → `Infinity`
 
 ---
 
-## **8. Getters and Setters**
+### **2. String**
 
-Control how properties are accessed/modified.
+**Sequence of characters (`immutable`)**
 
-### `Getter` (`get`)
+```js
+let single = 'hello';
+let double = "world";
+let template = `Hello ${single}`; // template literals
+let multiline = `line 1
+line 2`;
 
-```javascript
-class Circle {
-  constructor(radius) {
-    this.radius = radius;
-  }
-  
-  get diameter() {
-    return this.radius * 2;
-  }
-  
-  get area() {
-    return Math.PI * this.radius ** 2;
-  }
-}
-
-const circle = new Circle(5);
-console.log(circle.diameter); // 10 (no parentheses!)
-console.log(circle.area);     // 78.54
+console.log(typeof "hello"); // "string"
+console.log("hello"[0]); // "h" (indexing)
+console.log("hello".length); // 5
 ```
 
-### `Setter` (`set`)
+**Immutability:**
 
-```javascript
-class Rectangle {
-  constructor(width, height) {
-    this._width = width;
-    this._height = height;
-  }
-  
-  get area() {
-    return this._width * this._height;
-  }
-  
-  set width(value) {
-    if (value <= 0) {
-      throw new Error('Width must be positive');
-    }
-    this._width = value;
-  }
-  
-  get width() {
-    return this._width;
-  }
-}
+```js
+let str = "hello";
+str[0] = "H"; // does nothing
+console.log(str); // "hello"
 
-const rect = new Rectangle(10, 5);
-console.log(rect.area); // 50
-
-rect.width = 20;
-console.log(rect.area); // 100
+str = "Hello"; // reassignment works
 ```
 
 ---
 
-## **9. Private Properties & Methods**
+### **3. Boolean**
 
-Only accessible **inside the class**. Use `#` prefix.
+**Logical `true`/`false`**
 
-### `Private Fields`
+```js
+let isActive = true;
+let isCompleted = false;
 
-```javascript
-class BankAccount {
-  #balance = 0; // Private field
-  
-  constructor(owner) {
-    this.owner = owner; // Public field
-  }
-  
-  deposit(amount) {
-    this.#balance += amount;
-  }
-  
-  withdraw(amount) {
-    if (amount <= this.#balance) {
-      this.#balance -= amount;
-    } else {
-      console.log('Insufficient funds');
-    }
-  }
-  
-  getBalance() {
-    return this.#balance;
-  }
-}
+console.log(typeof true); // "boolean"
 
-const account = new BankAccount('Alice');
-account.deposit(100);
-console.log(account.getBalance()); // 100
-console.log(account.owner);        // "Alice"
-
-// ❌ Cannot access private
-console.log(account.#balance); // SyntaxError
+// Truthy vs Falsy
+console.log(Boolean(1)); // true
+console.log(Boolean(0)); // false
+console.log(Boolean("")); // false
+console.log(Boolean("text")); // true
+console.log(Boolean(null)); // false
+console.log(Boolean(undefined)); // false
 ```
 
-### `Private Methods`
+**Falsy values (6 total):**
 
-```javascript
-class User {
-  #password;
-  
-  constructor(username, password) {
-    this.username = username;
-    this.#password = this.#hashPassword(password);
-  }
-  
-  #hashPassword(password) {
-    return password.split('').reverse().join('');
-  }
-  
-  verifyPassword(password) {
-    return this.#hashPassword(password) === this.#password;
-  }
-}
-
-const user = new User('alice', 'secret123');
-console.log(user.verifyPassword('secret123')); // true
-
-// ❌ Cannot call private method
-user.#hashPassword('test'); // SyntaxError
+```js
+false, 0, -0, 0n, "", null, undefined, NaN
 ```
 
 ---
 
-## **10. Protected Properties**
+### **4. Undefined**
 
-JavaScript doesn't have true "`protected`", but uses `_` convention.
+**Variable declared but not assigned**
 
-```javascript
-class Person {
-  constructor(name) {
-    this._name = name; // Convention: _ = "protected"
-  }
-  
-  get name() {
-    return this._name;
-  }
-}
+```js
+let x;
+console.log(x); // undefined
+console.log(typeof x); // "undefined"
 
-class Employee extends Person {
-  constructor(name, salary) {
-    super(name);
-    this._salary = salary;
-  }
-  
-  displayInfo() {
-    console.log(`${this._name} earns $${this._salary}`);
-  }
-}
+function test() {}
+console.log(test()); // undefined (no return)
 
-const emp = new Employee('Alice', 50000);
-emp.displayInfo(); // "Alice earns $50000"
-
-// ⚠️ Still accessible (not truly protected)
-console.log(emp._name); // "Alice"
+let obj = { a: 1 };
+console.log(obj.b); // undefined (missing property)
 ```
 
-**Note:** `_` is just a convention, not enforced like `#`
+**Interview Trap:**
 
----
-
-## **11. Complete Example**
-
-```javascript
-// Parent class
-class Vehicle {
-  #vin; // Private
-  
-  constructor(brand, year) {
-    this.brand = brand;  // Public
-    this.year = year;    // Public
-    this.#vin = this.#generateVIN();
-  }
-  
-  #generateVIN() {
-    return 'VIN' + Math.random().toString(36).substr(2, 9);
-  }
-  
-  getInfo() {
-    return `${this.year} ${this.brand}`;
-  }
-  
-  static compare(v1, v2) {
-    return v1.year - v2.year;
-  }
-}
-
-// Child class
-class Car extends Vehicle {
-  constructor(brand, year, model) {
-    super(brand, year);
-    this.model = model;
-  }
-  
-  getInfo() {
-    return `${super.getInfo()} ${this.model}`;
-  }
-  
-  get age() {
-    return new Date().getFullYear() - this.year;
-  }
-}
-
-// Usage
-const car1 = new Car('Tesla', 2020, 'Model 3');
-const car2 = new Car('BMW', 2022, 'X5');
-
-console.log(car1.getInfo()); // "2020 Tesla Model 3"
-console.log(car1.age);       // 5
-console.log(Vehicle.compare(car1, car2)); // -2
+```js
+let x;
+console.log(x === undefined); // true
+console.log(typeof x === "undefined"); // true (safer check)
 ```
 
 ---
 
-## **12. Summary Table**
+### **5. Null**
 
-| Feature | Syntax | Access | Description |
-|---------|--------|--------|-------------|
-| **Public Property** | `this.name = value` | Everywhere | Default accessibility |
-| **Private Property** | `#name = value` | Inside class only | True privacy with `#` |
-| **Protected Property** | `_name = value` | Convention only | Not enforced |
-| **Constructor** | `constructor() {}` | Auto-called | Initializes instance |
-| **Instance Method** | `methodName() {}` | Via instances | Object behavior |
-| **Static Method** | `static method() {}` | Via class | Utilities, factories |
-| **Getter** | `get prop() {}` | Like property | Computed values |
-| **Setter** | `set prop(val) {}` | Like assignment | Validation |
-| **Private Method** | `#method() {}` | Inside class only | Internal logic |
-| **Inheritance** | `extends ParentClass` | - | Inherit properties/methods |
-| **Super Constructor** | `super(args)` | In child constructor | Call parent constructor |
-| **Super Method** | `super.method()` | In child methods | Call parent method |
+**Intentional absence of value**
+
+```js
+let user = null; // explicitly "no value"
+console.log(typeof null); // "object" ⚠️ (JS bug since 1995)
+
+console.log(null == undefined); // true (loose equality)
+console.log(null === undefined); // false (strict equality)
+```
+
+**null vs undefined:**
+
+- `undefined`: JS sets this automatically
+- `null`: developer sets this intentionally
 
 ---
 
-## **13. `Public` vs `Private` vs `Protected`**
+### **6. Symbol**
 
-```javascript
-class Example {
-  publicField = 'everyone can access';
-  #privateField = 'only inside class';
-  _protectedField = 'convention (not enforced)';
-  
-  showAll() {
-    console.log(this.publicField);     // ✅
-    console.log(this.#privateField);   // ✅
-    console.log(this._protectedField); // ✅
-  }
-}
+**Unique identifier (ES6+)**
 
-const obj = new Example();
-console.log(obj.publicField);     // ✅ Works
-console.log(obj.#privateField);   // ❌ SyntaxError
-console.log(obj._protectedField); // ✅ Works (shouldn't use)
-```
+```js
+let sym1 = Symbol();
+let sym2 = Symbol();
+console.log(sym1 === sym2); // false (always unique)
 
-**Comparison:**
+let sym3 = Symbol("id");
+let sym4 = Symbol("id");
+console.log(sym3 === sym4); // false
 
-| Type | Symbol | Enforced? | Use Case |
-|------|--------|-----------|----------|
-| **Public** | `this.prop` | - | General properties |
-| **Private** | `#prop` | ✅ Yes | Sensitive data, internal logic |
-| **Protected** | `_prop` | ❌ No | Inheritance (convention) |
-
----
-
-## **14. `Instance` vs `Static`**
-
-```javascript
-class MyClass {
-  instanceMethod() {
-    console.log('Called on instance');
-  }
-  
-  static staticMethod() {
-    console.log('Called on class');
-  }
-}
-
-const obj = new MyClass();
-
-// ✅ Correct usage
-obj.instanceMethod();
-MyClass.staticMethod();
-
-// ❌ Wrong usage
-obj.staticMethod();       // Error
-MyClass.instanceMethod(); // Error
-```
-
-**When to use Static:**
-
-- Math utilities
-- Factory functions
-- Configuration constants
-- Helper functions
-
----
-
-## **15. Common Mistakes**
-
-### `Mistake 1`: Forgetting `new`
-
-```javascript
-const person = Person('Alice');     // ❌ TypeError
-const person = new Person('Alice'); // ✅ Correct
-```
-
-### `Mistake 2`: Not calling `super()` first
-
-```javascript
-class Child extends Parent {
-  constructor(value) {
-    this.value = value; // ❌ ReferenceError
-    super();
-  }
-}
-
-// ✅ Correct
-class Child extends Parent {
-  constructor(value) {
-    super();           // Must be first!
-    this.value = value;
-  }
-}
-```
-
-### `Mistake 3`: Accessing private outside class
-
-```javascript
-class Test {
-  #secret = 'hidden';
-}
-
-const t = new Test();
-console.log(t.#secret); // ❌ SyntaxError
-```
-
-### `Mistake 4`: Using `this` before `super()`
-
-```javascript
-class Child extends Parent {
-  constructor() {
-    console.log(this.name); // ❌ ReferenceError
-    super();
-  }
-}
-
-// ✅ Correct
-class Child extends Parent {
-  constructor() {
-    super();
-    console.log(this.name); // ✅ Works
-  }
-}
-```
-
-### `Mistake 5`: Multiple constructors
-
-```javascript
-class Wrong {
-  constructor(name) {
-    this.name = name;
-  }
-  
-  constructor(age) { // ❌ SyntaxError
-    this.age = age;
-  }
-}
-
-// ✅ Use default parameters instead
-class Correct {
-  constructor(name = 'Unknown', age = 0) {
-    this.name = name;
-    this.age = age;
-  }
-}
-```
-
----
-
-## **16. Quick Reference**
-
-### Basic Class Structure
-
-```javascript
-class ClassName {
-  // Public field
-  publicProp = 'value';
-  
-  // Private field
-  #privateProp = 'secret';
-  
-  // Constructor
-  constructor(param) {
-    this.param = param;
-  }
-  
-  // Instance method
-  method() {
-    return this.#privateProp;
-  }
-  
-  // Static method
-  static staticMethod() {
-    return 'utility';
-  }
-  
-  // Getter
-  get computed() {
-    return this.publicProp;
-  }
-  
-  // Setter
-  set value(val) {
-    this.publicProp = val;
-  }
-  
-  // Private method
-  #privateMethod() {
-    return 'internal';
-  }
-}
-```
-
-### Inheritance Structure
-
-```javascript
-class Parent {
-  constructor(param1) {
-    this.param1 = param1;
-  }
-  
-  parentMethod() {
-    return 'parent';
-  }
-}
-
-class Child extends Parent {
-  constructor(param1, param2) {
-    super(param1);
-    this.param2 = param2;
-  }
-  
-  childMethod() {
-    return super.parentMethod() + ' child';
-  }
-}
-```
-
----
-
-## **17. Real-World Examples**
-
-### `Example 1`: User Authentication System
-
-```javascript
-class User {
-  #password;
-  
-  constructor(username, password) {
-    this.username = username;
-    this.#password = this.#hash(password);
-    this.isLoggedIn = false;
-  }
-  
-  #hash(str) {
-    return btoa(str); // Simple encoding
-  }
-  
-  login(password) {
-    if (this.#hash(password) === this.#password) {
-      this.isLoggedIn = true;
-      return true;
-    }
-    return false;
-  }
-  
-  logout() {
-    this.isLoggedIn = false;
-  }
-}
-
-const user = new User('alice', 'secret123');
-console.log(user.login('secret123')); // true
-```
-
-### `Example 2`: Shopping Cart
-
-```javascript
-class ShoppingCart {
-  #items = [];
-  
-  addItem(product, quantity) {
-    this.#items.push({ product, quantity });
-  }
-  
-  removeItem(productName) {
-    this.#items = this.#items.filter(
-      item => item.product !== productName
-    );
-  }
-  
-  get total() {
-    return this.#items.reduce(
-      (sum, item) => sum + (item.product.price * item.quantity),
-      0
-    );
-  }
-  
-  get itemCount() {
-    return this.#items.length;
-  }
-}
-```
-
-### `Example 3`: Employee Management
-
-```javascript
-class Person {
-  constructor(name, age) {
-    this.name = name;
-    this.age = age;
-  }
-  
-  introduce() {
-    return `Hi, I'm ${this.name}`;
-  }
-}
-
-class Employee extends Person {
-  static employeeCount = 0;
-  
-  constructor(name, age, position, salary) {
-    super(name, age);
-    this.position = position;
-    this._salary = salary;
-    Employee.employeeCount++;
-  }
-  
-  get monthlySalary() {
-    return this._salary / 12;
-  }
-  
-  introduce() {
-    return `${super.introduce()} and I work as ${this.position}`;
-  }
-  
-  static getEmployeeCount() {
-    return Employee.employeeCount;
-  }
-}
-
-const emp1 = new Employee('Alice', 30, 'Developer', 60000);
-const emp2 = new Employee('Bob', 25, 'Designer', 50000);
-
-console.log(emp1.introduce());
-console.log(Employee.getEmployeeCount()); // 2
-```
-
----
-
-## **18. Interview Tips**
-
-**Q: What's the difference between class and function constructor?**
-
-```javascript
-// Function constructor (old way)
-function Person(name) {
-  this.name = name;
-}
-Person.prototype.greet = function() {
-  return `Hi, ${this.name}`;
+// Use case: unique object keys
+let obj = {
+  [Symbol("id")]: 123,
+  name: "Alice"
 };
+console.log(Object.keys(obj)); // ["name"] (Symbol ignored)
+```
 
-// Class (new way - ES6+)
-class Person {
+**Real-world use:** `Hidden object properties`, `avoiding key collisions`
+
+---
+
+### **7. BigInt**
+
+**Large integers beyond `Number.MAX_SAFE_INTEGER` (ES2020+)**
+
+```js
+let big1 = 9007199254740991n; // add 'n' suffix
+let big2 = BigInt("9007199254740991");
+
+console.log(typeof 123n); // "bigint"
+console.log(123n + 456n); // 579n
+
+// ⚠️ Cannot mix with Number
+console.log(123n + 456); // TypeError
+console.log(123n + BigInt(456)); // 579n
+```
+
+**Interview Trap:**
+
+```js
+console.log(1n === 1); // false (different types)
+console.log(1n == 1); // true (coercion)
+```
+
+---
+
+### **8. Object**
+
+**Collection of key-value pairs (`mutable`, `stored by reference`)**
+
+```js
+let obj = { name: "Alice", age: 25 };
+let arr = [1, 2, 3];
+let func = function() {};
+let date = new Date();
+let regex = /abc/;
+let map = new Map();
+let set = new Set();
+
+console.log(typeof obj); // "object"
+console.log(typeof arr); // "object"
+console.log(typeof func); // "function"
+console.log(typeof date); // "object"
+```
+
+**Reference behavior:**
+
+```js
+let a = { x: 1 };
+let b = a; // copy reference
+b.x = 2;
+console.log(a.x); // 2 (both point to same object)
+```
+
+**Checking arrays:**
+
+```js
+console.log(typeof []); // "object" ⚠️
+console.log(Array.isArray([])); // true ✅
+```
+
+---
+
+## Common Interview Traps
+
+### **Trap 1: typeof null**
+
+```js
+console.log(typeof null); // "object" (not "null"!)
+// Use strict equality:
+console.log(value === null); // ✅
+```
+
+### **Trap 2: NaN weirdness**
+
+```js
+console.log(NaN === NaN); // false
+console.log(Object.is(NaN, NaN)); // true
+console.log(Number.isNaN(NaN)); // true ✅
+```
+
+### **Trap 3: Array type check**
+
+```js
+console.log(typeof []); // "object"
+console.log(Array.isArray([])); // true ✅
+```
+
+### **Trap 4: Floating point precision**
+
+```js
+console.log(0.1 + 0.2); // 0.30000000000000004
+console.log((0.1 + 0.2).toFixed(2)); // "0.30"
+```
+
+### **Trap 5: Loose vs Strict Equality**
+
+```js
+console.log(null == undefined); // true
+console.log(null === undefined); // false
+console.log(0 == false); // true
+console.log(0 === false); // false
+```
+
+---
+
+## Real-World Use Cases
+
+### **1. Type checking before operations**
+
+```js
+function safeDivide(a, b) {
+  if (typeof a !== 'number' || typeof b !== 'number') {
+    return 'Invalid input';
+  }
+  return b === 0 ? Infinity : a / b;
+}
+```
+
+### **2. Symbol for private properties**
+
+```js
+const _id = Symbol('id');
+class User {
   constructor(name) {
+    this[_id] = Math.random();
     this.name = name;
   }
-  
-  greet() {
-    return `Hi, ${this.name}`;
+  getId() {
+    return this[_id];
   }
 }
 ```
 
-**Key Differences:**
+### **3. BigInt for cryptography**
 
-- Classes can't be called without `new`
-- Class methods are non-enumerable
-- Classes have built-in strict mode
-- Classes support `extends` and `super` naturally
+```js
+const largeNumber = 12345678901234567890n;
+const encrypted = largeNumber * 7n;
+```
 
-**Q: When to use static methods?**
+### **4. Null for intentional reset**
 
-- Utility functions (Math.max, Array.from)
-- Factory patterns (User.createAdmin)
-- Constants (Config.API_URL)
-
-**Q: Why use private fields?**
-
-- Data encapsulation
-- Prevent external modification
-- Hide implementation details
-- Avoid naming conflicts
+```js
+let cachedData = fetchData();
+// ... later
+cachedData = null; // clear cache
+```
 
 ---
 
-## **Key Takeaways**
+## Quick Reference Table
 
-✅ Classes are blueprints for objects
+| Type      | Example     | typeof        | Mutable | Stored |
+| --------- | ----------- | ------------- | ------- | ------ |
+| `Number`    | `42`        | `"number"`    | `No`      | `Stack`  |
+| `String`    | `"hello"`   | `"string"`    | `No`      | `Stack`  |
+| `Boolean`   | `true`      | `"boolean"`   | `No`      | `Stack`  |
+| `Undefined` | `undefined` | `"undefined"` | `No`      | `Stack`  |
+| `Null`      | `null`      | `"object"`⚠️  | `No`      | `Stack`  |
+| `Symbol`    | `Symbol()`  | `"symbol"`    | `No`      | `Stack`  |
+| `BigInt`    | `123n`      | `"bigint"`    | `No`      | `Stack`  |
+| `Object`    | `{ a: 1 }`  | `"object"`    | `Yes`     | `Heap`  |
 
-✅ `new` creates instances
+---
 
-✅ `constructor` initializes objects
+## Bonus: Type Conversion
 
-✅ `extends` enables inheritance
+### Implicit Coercion
 
-✅ `super()` calls parent constructor (must be first)
+```js
+console.log("5" + 3); // "53" (string concatenation)
+console.log("5" - 3); // 2 (numeric subtraction)
+console.log(true + 1); // 2
+console.log(false + 1); // 1
+console.log(null + 1); // 1
+console.log(undefined + 1); // NaN
+```
 
-✅ `super.method()` calls parent methods
+### Explicit Conversion
 
-✅ `static` methods belong to class, not instances
+```js
+// To Number
+Number("123"); // 123
+parseInt("123px"); // 123
+parseFloat("3.14abc"); // 3.14
++"123"; // 123 (unary plus)
 
-✅ `#` creates truly private fields/methods
+// To String
+String(123); // "123"
+(123).toString(); // "123"
+123 + ""; // "123"
 
-✅ `_` is convention for "protected" (not enforced)
-
-✅ Getters/setters control property access
+// To Boolean
+Boolean(1); // true
+!!1; // true (double negation)
+```
 
 ---
