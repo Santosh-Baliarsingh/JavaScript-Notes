@@ -369,9 +369,9 @@ console.log(math.add(2, 3)); // 5
 **Characteristics:**
 
 - Synchronous loading
-- \`require()\` can be called anywhere (dynamic)
+- `require()` can be called anywhere (dynamic)
 - Exports are **value copies** (not live bindings)
-- Default in Node.js (\`.js\` files)
+- Default in Node.js (`.js` files)
 
 ---
 
@@ -389,9 +389,9 @@ console.log(add(2, 3)); // 5
 **Characteristics:**
 
 - Asynchronous loading (non-blocking)
-- \`import\` statements are **hoisted** and static
+- `import` statements are **hoisted** and static
 - Exports are **live bindings** (changes reflect)
-- Use \`.mjs\` extension or \`"type": "module"\` in \`package.json\`
+- Use `.mjs` extension or `"type": "module"` in `package.json`
 
 ---
 
