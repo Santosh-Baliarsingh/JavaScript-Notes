@@ -3,466 +3,398 @@
 <!-- markdownlint-disable MD050 -->
 <!-- markdownlint-disable MD024 -->
 
-# **JavaScript Error Handling**
+# **JavaScript Promises and Async/Await**
 
-## **Table of Contents**
+## **Table Of Contents**
 
-- [**JavaScript Error Handling**](#javascript-error-handling)
-  - [**Table of Contents**](#table-of-contents)
-  - [**Understanding Error Handling**](#understanding-error-handling)
-    - [What is Error Handling?](#what-is-error-handling)
-    - [When Do We Need It?](#when-do-we-need-it)
-  - [**Error Flow Diagrams**](#error-flow-diagrams)
-    - [Synchronous Error Flow](#synchronous-error-flow)
-    - [Asynchronous Error Flow](#asynchronous-error-flow)
-    - [Error Propagation](#error-propagation)
-    - [Error Object Structure](#error-object-structure)
+- [**JavaScript Promises and Async/Await**](#javascript-promises-and-asyncawait)
+  - [**Table Of Contents**](#table-of-contents)
+  - [**Initial Understanding**](#initial-understanding)
+  - [**Beginner Explanation**](#beginner-explanation)
+    - [What's the Problem?](#whats-the-problem)
+    - [Promise States](#promise-states)
+    - [Basic Promise Example](#basic-promise-example)
+  - [**Advanced Explanation**](#advanced-explanation)
+    - [Internal Promise Mechanism](#internal-promise-mechanism)
+    - [How Promises Work Internally](#how-promises-work-internally)
   - [**Code Examples**](#code-examples)
-    - [Basic Try-Catch](#basic-try-catch)
-    - [Try-Catch-Finally](#try-catch-finally)
-    - [Custom Error Classes](#custom-error-classes)
-    - [Async Error Handling](#async-error-handling)
-      - [With Promises](#with-promises)
-      - [With Async/Await](#with-asyncawait)
-    - [Global Error Handlers](#global-error-handlers)
-      - [Browser](#browser)
-      - [Node.js](#nodejs)
-    - [Error Boundary Pattern](#error-boundary-pattern)
-    - [Retry Logic with Error Handling](#retry-logic-with-error-handling)
-    - [Safe JSON Parsing](#safe-json-parsing)
-    - [Advanced: Async Error Wrapper](#advanced-async-error-wrapper)
-    - [Error Logging Service](#error-logging-service)
+    - [Example 1: Basic Promise Chain](#example-1-basic-promise-chain)
+    - [Example 2: Promise.all (Parallel Execution)](#example-2-promiseall-parallel-execution)
+    - [Example 3: Promise.race (First to Settle Wins)](#example-3-promiserace-first-to-settle-wins)
+    - [Example 4: Promise.allSettled (Wait for All, Ignore Failures)](#example-4-promiseallsettled-wait-for-all-ignore-failures)
+  - [**Async/Await - Syntactic Sugar**](#asyncawait---syntactic-sugar)
+    - [Basic Syntax](#basic-syntax)
+    - [How Async/Await Works Internally](#how-asyncawait-works-internally)
+    - [Example 1: Sequential vs Parallel Execution](#example-1-sequential-vs-parallel-execution)
+    - [Example 2: Error Handling Patterns](#example-2-error-handling-patterns)
+    - [Example 3: Advanced Async Patterns](#example-3-advanced-async-patterns)
+    - [Example 4: Async Iteration](#example-4-async-iteration)
   - [**Common Interview Traps**](#common-interview-traps)
-    - [Trap 1: Finally Always Executes](#trap-1-finally-always-executes)
-    - [Trap 2: Async Errors in setTimeout](#trap-2-async-errors-in-settimeout)
-    - [Trap 3: Unhandled Promise Rejections](#trap-3-unhandled-promise-rejections)
-    - [Trap 4: Error Swallowing](#trap-4-error-swallowing)
-    - [Trap 5: Not Checking Response Status](#trap-5-not-checking-response-status)
-    - [Trap 6: Multiple Async Operations Without Error Handling](#trap-6-multiple-async-operations-without-error-handling)
+    - [Trap 1: Forgetting to Return in Promise Chains](#trap-1-forgetting-to-return-in-promise-chains)
+    - [Trap 2: Async Function Always Returns a Promise](#trap-2-async-function-always-returns-a-promise)
+    - [Trap 3: Error Handling in Promise Chains](#trap-3-error-handling-in-promise-chains)
+    - [Trap 4: Mixing Callbacks and Promises](#trap-4-mixing-callbacks-and-promises)
+    - [Trap 5: Forgotten await](#trap-5-forgotten-await)
   - [**Real-World Use Cases**](#real-world-use-cases)
-    - [1. API Request Handling](#1-api-request-handling)
-    - [2. Form Validation](#2-form-validation)
-    - [3. File Processing](#3-file-processing)
-    - [4. Database Operations](#4-database-operations)
-    - [5. Rate Limiting with Error Recovery](#5-rate-limiting-with-error-recovery)
-  - [**Error Handling Cheatsheet**](#error-handling-cheatsheet)
-  - [**Best Practices**](#best-practices)
-    - [`DO`](#do)
-    - [`DON'T`](#dont)
-  - [**Error Types Reference**](#error-types-reference)
-    - [Built-in Error Types](#built-in-error-types)
-    - [Custom Error Types](#custom-error-types)
-  - [**Quick Reference**](#quick-reference)
-    - [Error Handling Decision Tree](#error-handling-decision-tree)
-  - [**Interview Questions to Practice**](#interview-questions-to-practice)
-  - [**Summary**](#summary)
+    - [Use Case 1: API Orchestration](#use-case-1-api-orchestration)
+    - [Use Case 2: Rate Limiting API Calls](#use-case-2-rate-limiting-api-calls)
+    - [Use Case 3: Graceful Degradation](#use-case-3-graceful-degradation)
+  - [**Performance Comparison**](#performance-comparison)
+  - [**Key Takeaways**](#key-takeaways)
+  - [**Additional Resources**](#additional-resources)
+
+## **Initial Understanding**
+
+Promises and async/await are JavaScript's solutions for handling **asynchronous operations**. They allow us to write non-blocking code that waits for operations (like API calls, file reads, timers) to complete without freezing the entire program.
+
+- **Promises**: Objects representing the eventual completion (or failure) of an async operation
+- **Async/Await**: Syntactic sugar over Promises that makes async code look synchronous
 
 ---
 
-## **Understanding Error Handling**
+## **Beginner Explanation**
 
-### What is Error Handling?
+### What's the Problem?
 
-JavaScript error handling is the mechanism to **catch, handle, and recover** from runtime errors without crashing the entire application.
+**Imagine ordering food online:**
 
-**Basic Structure:**
+1. You place an order (async operation starts)
+2. You don't wait by the door doing nothing
+3. You do other things (watch TV, work)
+4. When food arrives, you eat it
 
-```javascript
-try {
-  // Code that might throw an error
-} catch (error) {
-  // Handle the error
-} finally {
-  // Always runs (optional)
-}
+**Promises work the same way** - they represent a value that will be available in the future.
+
+### Promise States
+
+A Promise can be in one of three states:
+
+```text
+┌─────────────┐
+│  PENDING    │  (Initial state - operation in progress)
+└──────┬──────┘
+       │
+       ├───────────┐
+       │           │
+       ▼           ▼
+┌──────────┐  ┌──────────┐
+│ FULFILLED│  │ REJECTED │
+│ (Success)│  │ (Error)  │
+└──────────┘  └──────────┘
 ```
 
-### When Do We Need It?
+### Basic Promise Example
 
-- Variable doesn't exist
-- Network request fails
-- JSON parsing breaks
-- Type mismatches
-- Null/undefined access
+```js
+// Creating a Promise
+const myPromise = new Promise((resolve, reject) => {
+  const success = true;
+  
+  if (success) {
+    resolve("Operation succeeded!"); // Fulfills the promise
+  } else {
+    reject("Operation failed!"); // Rejects the promise
+  }
+});
+
+// Consuming the Promise
+myPromise
+  .then(result => console.log(result)) // If fulfilled
+  .catch(error => console.log(error))  // If rejected
+  .finally(() => console.log("Done")); // Always runs
+```
 
 ---
 
-## **Error Flow Diagrams**
+## **Advanced Explanation**
 
-### Synchronous Error Flow
-
-```text
-┌─────────────────────────────────────────────┐
-│          SYNCHRONOUS ERROR FLOW             │
-├─────────────────────────────────────────────┤
-│                                             │
-│  try {                                      │
-│    throw new Error("Oops");  ───┐           │
-│  }                              |           │
-│                                 ▼           │
-│  catch (error) { ◄────────  ERROR THROWN    │
-│    console.log(error.message);              │
-│  }                                          │
-│                                   │         │
-│  finally {        ◄───────────────┘         │
-│    // cleanup                               │
-│  }                                          │
-└─────────────────────────────────────────────┘
-```
-
-### Asynchronous Error Flow
+### Internal Promise Mechanism
 
 ```text
-┌─────────────────────────────────────────────┐
-│         ASYNCHRONOUS ERROR FLOW             │
-├─────────────────────────────────────────────┤
-│                                             │
-│  Promise-based:                             │
-│    fetch(url)                               │
-│      .then(res => res.json())               │
-│      .catch(err => handle(err)) ◄── CATCH   │
-│                                             │
-│  Async/Await:                               │
-│    try {                                    │
-│      await fetch(url);                      │
-│    } catch (err) { ◄─────────── CATCH       │
-│      handle(err);                           │
-│    }                                        │
-└─────────────────────────────────────────────┘
+EVENT LOOP ARCHITECTURE
+═══════════════════════════════════════════
+
+CALL STACK          MICROTASK QUEUE       MACROTASK QUEUE
+┌──────────┐       ┌──────────────┐      ┌──────────────┐
+│          │       │ .then()      │      │ setTimeout() │
+│ main()   │       │ .catch()     │      │ setInterval()│
+│ foo()    │       │ async/await  │      │ I/O ops      │
+│ bar()    │       │ Promise cb   │      │              │
+└──────────┘       └──────────────┘      └──────────────┘
+     ↑                    ↑                      ↑
+     └────────────────────┴──────────────────────┘
+              Event Loop Priority:
+              1. Call Stack (synchronous)
+              2. Microtask Queue (promises)
+              3. Macrotask Queue (timers, I/O)
 ```
 
-### Error Propagation
+### How Promises Work Internally
 
-```text
-┌─────────────────────────────────────────────┐
-│           ERROR PROPAGATION                 │
-├─────────────────────────────────────────────┤
-│                                             │
-│  function a() { throw Error("A"); }         │
-│  function b() { a(); }                      │
-│  function c() { b(); }                      │
-│                                             │
-│  try { c(); }                               │
-│  catch (e) { // Catches error from a() }    │
-│                                             │
-│  Call Stack:                                │
-│    c() → b() → a() → throw → catch          │
-└─────────────────────────────────────────────┘
+1. **Promise Creation**: Creates a new Promise object in pending state
+2. **Executor Function**: Runs immediately and synchronously
+3. **Resolution**: `resolve()` or `reject()` moves promise to settled state
+4. **Handlers**: `.then()`, `.catch()`, `.finally()` are registered as microtasks
+5. **Microtask Queue**: Promise callbacks execute before macrotasks
+
+```js
+console.log('1: Sync Start');
+
+setTimeout(() => console.log('2: Macrotask'), 0);
+
+Promise.resolve()
+  .then(() => console.log('3: Microtask 1'))
+  .then(() => console.log('4: Microtask 2'));
+
+console.log('5: Sync End');
+
+// OUTPUT:
+// 1: Sync Start
+// 5: Sync End
+// 3: Microtask 1
+// 4: Microtask 2
+// 2: Macrotask
 ```
 
-### Error Object Structure
-
-```javascript
-{
-  name: "TypeError",           // Error type
-  message: "Cannot read...",   // Description
-  stack: "TypeError: at..."    // Stack trace
-}
-```
+**Why?** Microtasks (Promises) have higher priority than macrotasks (setTimeout).
 
 ---
 
 ## **Code Examples**
 
-### Basic Try-Catch
+### Example 1: Basic Promise Chain
 
-```javascript
+```js
 // Simple version
-try {
-  let user = JSON.parse('{"name": "Alice"');  // Missing closing brace
-} catch (error) {
-  console.log("Error:", error.message);
-}
-// Output: Error: Unexpected end of JSON input
-```
-
----
-
-### Try-Catch-Finally
-
-```javascript
-function readFile(path) {
-  let file;
-  try {
-    file = openFile(path);  // Imagine this can fail
-    return processFile(file);
-  } catch (error) {
-    console.error("Failed to read file:", error.message);
-    return null;
-  } finally {
-    // Always runs, even if return/throw in try/catch
-    if (file) closeFile(file);
-    console.log("Cleanup complete");
-  }
-}
-```
-
-**Key Point:** `finally` executes even if `return` or `throw` happens in `try` or `catch`.
-
----
-
-### Custom Error Classes
-
-```javascript
-// Define custom error class
-class ValidationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "ValidationError";
-  }
+function fetchUser(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (id > 0) {
+        resolve({ id, name: 'John' });
+      } else {
+        reject('Invalid ID');
+      }
+    }, 1000);
+  });
 }
 
-class NetworkError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.name = "NetworkError";
-    this.statusCode = statusCode;
-  }
-}
-
-// Usage
-function validateAge(age) {
-  if (age < 0) {
-    throw new ValidationError("Age cannot be negative");
-  }
-  if (age > 150) {
-    throw new ValidationError("Age too high");
-  }
-  return age;
-}
-
-try {
-  validateAge(-5);
-} catch (error) {
-  if (error instanceof ValidationError) {
-    console.log("Validation failed:", error.message);
-  } else {
-    console.log("Unknown error:", error);
-  }
-}
-```
-
----
-
-### Async Error Handling
-
-#### With Promises
-
-```javascript
-fetch('https://api.example.com/data')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    return response.json();
+fetchUser(1)
+  .then(user => {
+    console.log('User:', user);
+    return fetchUser(2); // Chaining
   })
-  .then(data => console.log(data))
-  .catch(error => console.error("Fetch failed:", error.message))
-  .finally(() => console.log("Request complete"));
+  .then(user => console.log('User 2:', user))
+  .catch(err => console.error('Error:', err))
+  .finally(() => console.log('Cleanup'));
 ```
 
-#### With Async/Await
+### Example 2: Promise.all (Parallel Execution)
 
-```javascript
-async function fetchData(url) {
+```js
+const promise1 = Promise.resolve(3);
+const promise2 = new Promise(resolve => setTimeout(() => resolve('foo'), 100));
+const promise3 = fetch('https://api.github.com/users/github')
+  .then(res => res.json());
+
+// Wait for ALL promises to resolve
+Promise.all([promise1, promise2, promise3])
+  .then(values => {
+    console.log(values); // [3, "foo", {...}]
+  })
+  .catch(err => {
+    console.error('One failed:', err); // Fails if ANY promise rejects
+  });
+```
+
+### Example 3: Promise.race (First to Settle Wins)
+
+```js
+const slow = new Promise(resolve => setTimeout(() => resolve('slow'), 2000));
+const fast = new Promise(resolve => setTimeout(() => resolve('fast'), 100));
+
+Promise.race([slow, fast])
+  .then(result => console.log(result)); // "fast"
+```
+
+### Example 4: Promise.allSettled (Wait for All, Ignore Failures)
+
+```js
+const promises = [
+  Promise.resolve(1),
+  Promise.reject('Error'),
+  Promise.resolve(3)
+];
+
+Promise.allSettled(promises).then(results => {
+  console.log(results);
+  // [
+  //   { status: 'fulfilled', value: 1 },
+  //   { status: 'rejected', reason: 'Error' },
+  //   { status: 'fulfilled', value: 3 }
+  // ]
+});
+```
+
+---
+
+## **Async/Await - Syntactic Sugar**
+
+### Basic Syntax
+
+```js
+// Promise version
+function fetchData() {
+  return fetch('/api/data')
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error(err));
+}
+
+// Async/Await version
+async function fetchData() {
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    const data = await response.json();
+    const res = await fetch('/api/data');
+    const data = await res.json();
+    console.log(data);
+  } catch (err) {
+    console.error(err);
+  }
+}
+```
+
+### How Async/Await Works Internally
+
+```js
+async function foo() {
+  const result = await promise;
+  console.log(result);
+}
+
+// Transforms to:
+function foo() {
+  return promise.then(result => {
+    console.log(result);
+  });
+}
+```
+
+### Example 1: Sequential vs Parallel Execution
+
+```js
+// ❌ BAD: Sequential (slow - 3 seconds total)
+async function sequential() {
+  const user = await fetchUser(1);    // 1 sec
+  const posts = await fetchPosts(1);  // 1 sec
+  const comments = await fetchComments(1); // 1 sec
+  return { user, posts, comments };
+}
+
+// ✅ GOOD: Parallel (fast - 1 second total)
+async function parallel() {
+  const [user, posts, comments] = await Promise.all([
+    fetchUser(1),
+    fetchPosts(1),
+    fetchComments(1)
+  ]);
+  return { user, posts, comments };
+}
+```
+
+### Example 2: Error Handling Patterns
+
+```js
+// Pattern 1: Try-Catch
+async function pattern1() {
+  try {
+    const data = await fetchData();
     return data;
   } catch (error) {
-    console.error("Error:", error.message);
+    console.error('Error:', error);
     return null;
-  } finally {
-    console.log("Cleanup");
-  }
-}
-```
-
----
-
-### Global Error Handlers
-
-#### Browser
-
-```javascript
-// Catch unhandled errors
-window.addEventListener('error', (event) => {
-  console.error("Global error:", event.error);
-  // Send to logging service
-  logToServer(event.error);
-});
-
-// Catch unhandled promise rejections
-window.addEventListener('unhandledrejection', (event) => {
-  console.error("Unhandled promise rejection:", event.reason);
-  event.preventDefault();  // Prevent default error logging
-});
-```
-
-#### Node.js
-
-```javascript
-process.on('uncaughtException', (error) => {
-  console.error("Uncaught exception:", error);
-  process.exit(1);  // Exit gracefully
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error("Unhandled rejection at:", promise, "reason:", reason);
-});
-```
-
----
-
-### Error Boundary Pattern
-
-```javascript
-class ErrorHandler {
-  constructor() {
-    this.handlers = [];
-  }
-
-  register(handler) {
-    this.handlers.push(handler);
-  }
-
-  handle(error) {
-    for (const handler of this.handlers) {
-      if (handler.canHandle(error)) {
-        handler.handle(error);
-        return;
-      }
-    }
-    console.error("Unhandled error:", error);
   }
 }
 
-// Custom handlers
-const networkErrorHandler = {
-  canHandle: (e) => e.name === 'NetworkError',
-  handle: (e) => console.log("Network issue:", e.message)
-};
-
-const validationErrorHandler = {
-  canHandle: (e) => e instanceof ValidationError,
-  handle: (e) => console.log("Validation failed:", e.message)
-};
-
-// Usage
-const errorHandler = new ErrorHandler();
-errorHandler.register(networkErrorHandler);
-errorHandler.register(validationErrorHandler);
-
-try {
-  throw new ValidationError("Invalid email");
-} catch (error) {
-  errorHandler.handle(error);
+// Pattern 2: .catch() on await
+async function pattern2() {
+  const data = await fetchData().catch(err => {
+    console.error('Error:', err);
+    return null;
+  });
+  return data;
 }
+
+// Pattern 3: Wrapper function
+async function safeAsync(promise) {
+  try {
+    const data = await promise;
+    return [null, data];
+  } catch (error) {
+    return [error, null];
+  }
+}
+
+const [error, data] = await safeAsync(fetchData());
+if (error) console.error(error);
 ```
 
----
+### Example 3: Advanced Async Patterns
 
-### Retry Logic with Error Handling
-
-```javascript
-async function fetchWithRetry(url, retries = 3, delay = 1000) {
+```js
+// Retry logic
+async function fetchWithRetry(url, retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      if (i === retries - 1) throw error;  // Last attempt failed
-      console.log(`Retry ${i + 1}/${retries} after error:`, error.message);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      return await fetch(url);
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
     }
   }
 }
 
-// Usage
-fetchWithRetry('https://api.example.com/data')
-  .then(data => console.log(data))
-  .catch(error => console.error("All retries failed:", error));
-```
-
----
-
-### Safe JSON Parsing
-
-```javascript
-function safeParse(jsonString, fallback = null) {
-  try {
-    return JSON.parse(jsonString);
-  } catch (error) {
-    console.warn("JSON parse failed:", error.message);
-    return fallback;
-  }
+// Timeout wrapper
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), ms)
+    )
+  ]);
 }
 
 // Usage
-const data = safeParse('{"name": "Alice"}');  // Works
-const invalid = safeParse('{bad json}', {});   // Returns {}
+await withTimeout(fetch('/api/slow'), 5000);
 ```
 
----
+### Example 4: Async Iteration
 
-### Advanced: Async Error Wrapper
-
-```javascript
-// Wrapper to avoid try-catch repetition
-const asyncHandler = (fn) => {
-  return async (...args) => {
-    try {
-      return await fn(...args);
-    } catch (error) {
-      console.error("Async error:", error);
-      throw error;
-    }
-  };
-};
-
-// Usage
-const getUser = asyncHandler(async (id) => {
-  const response = await fetch(`/api/users/${id}`);
-  return await response.json();
-});
-```
-
----
-
-### Error Logging Service
-
-```javascript
-class Logger {
-  static async logError(error, context = {}) {
-    try {
-      await fetch('/api/logs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: error.message,
-          stack: error.stack,
-          name: error.name,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          url: window.location.href,
-          ...context
-        })
-      });
-    } catch (loggingError) {
-      console.error("Failed to log error:", loggingError);
-    }
+```js
+// for...of with async/await
+async function processUsers(userIds) {
+  for (const id of userIds) {
+    const user = await fetchUser(id); // Sequential
+    console.log(user);
   }
 }
 
-// Usage
-try {
-  throw new Error("Something broke");
-} catch (error) {
-  Logger.logError(error, { userId: 123, action: 'checkout' });
+// Parallel processing with map
+async function processUsersParallel(userIds) {
+  const promises = userIds.map(id => fetchUser(id));
+  const users = await Promise.all(promises);
+  console.log(users);
+}
+
+// Async generators
+async function* fetchPages() {
+  let page = 1;
+  while (page <= 5) {
+    yield await fetch(`/api/page/${page}`);
+    page++;
+  }
+}
+
+for await (const response of fetchPages()) {
+  console.log(await response.json());
 }
 ```
 
@@ -470,135 +402,67 @@ try {
 
 ## **Common Interview Traps**
 
-### Trap 1: Finally Always Executes
+### Trap 1: Forgetting to Return in Promise Chains
 
-```javascript
-function test() {
-  try {
-    return "try";
-  } finally {
-    return "finally";  // This overrides the try return!
-  }
-}
-console.log(test());  // "finally" (not "try")
-```
-
-**Why?** `finally` executes after `try`/`catch` and can override their return values.
-
----
-
-### Trap 2: Async Errors in setTimeout
-
-```javascript
-// ❌ WRONG - Catch won't work
-try {
-  setTimeout(() => {
-    throw new Error("Async error");
-  }, 100);
-} catch (e) {
-  console.log("Caught");  // NEVER RUNS!
-}
+```js
+// ❌ WRONG
+promise1
+  .then(result => {
+    promise2(result); // Forgotten return!
+  })
+  .then(result => console.log(result)); // undefined!
 
 // ✅ CORRECT
-setTimeout(() => {
-  try {
-    throw new Error("Async error");
-  } catch (e) {
-    console.log("Caught:", e.message);
-  }
-}, 100);
+promise1
+  .then(result => promise2(result))
+  .then(result => console.log(result));
 ```
 
-**Why?** `setTimeout` executes outside the try-catch context.
+### Trap 2: Async Function Always Returns a Promise
 
----
+```js
+async function getValue() {
+  return 42; // Wrapped in Promise.resolve(42)
+}
 
-### Trap 3: Unhandled Promise Rejections
+getValue().then(val => console.log(val)); // 42
+```
 
-```javascript
-// ❌ WRONG
+### Trap 3: Error Handling in Promise Chains
+
+```js
+promise1
+  .then(result => {
+    throw new Error('Oops');
+  })
+  .then(result => console.log('Never runs'))
+  .catch(err => console.log('Caught:', err.message)); // Runs
+```
+
+### Trap 4: Mixing Callbacks and Promises
+
+```js
+// ❌ ANTI-PATTERN
 async function bad() {
-  await Promise.reject("Error");  // Unhandled!
-}
-bad();  // Silent failure
-
-// ✅ CORRECT
-async function good() {
-  try {
-    await Promise.reject("Error");
-  } catch (e) {
-    console.log("Handled:", e);
-  }
-}
-```
-
----
-
-### Trap 4: Error Swallowing
-
-```javascript
-// ❌ BAD - Empty catch
-try {
-  somethingDangerous();
-} catch (e) {
-  // Silent failure - very hard to debug
-}
-
-// ✅ BETTER
-try {
-  somethingDangerous();
-} catch (e) {
-  console.error("Error occurred:", e);
-  // or rethrow: throw e;
-}
-```
-
----
-
-### Trap 5: Not Checking Response Status
-
-```javascript
-// ❌ WRONG
-try {
-  const response = await fetch('/api/data');
-  const data = await response.json();  // Might fail silently
-} catch (e) {
-  console.error(e);
+  setTimeout(() => {
+    return 'done'; // Doesn't work!
+  }, 1000);
 }
 
 // ✅ CORRECT
-try {
-  const response = await fetch('/api/data');
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-  }
-  const data = await response.json();
-} catch (e) {
-  console.error(e);
+function good() {
+  return new Promise(resolve => {
+    setTimeout(() => resolve('done'), 1000);
+  });
 }
 ```
 
----
+### Trap 5: Forgotten await
 
-### Trap 6: Multiple Async Operations Without Error Handling
-
-```javascript
-// ❌ WRONG - If any promise fails, others continue
-Promise.all([
-  fetch('/api/users'),
-  fetch('/api/posts'),
-  fetch('/api/comments')
-]);
-
-// ✅ CORRECT
-try {
-  const [users, posts, comments] = await Promise.all([
-    fetch('/api/users').then(r => r.json()),
-    fetch('/api/posts').then(r => r.json()),
-    fetch('/api/comments').then(r => r.json())
-  ]);
-} catch (error) {
-  console.error("One or more requests failed:", error);
+```js
+async function danger() {
+  const data = fetchData(); // Missing await!
+  console.log(data); // Promise object, not data!
 }
 ```
 
@@ -606,426 +470,115 @@ try {
 
 ## **Real-World Use Cases**
 
-### 1. API Request Handling
+### Use Case 1: API Orchestration
 
-```javascript
-class ApiClient {
-  static async request(endpoint, options = {}) {
-    try {
-      const response = await fetch(endpoint, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers
-        },
-        ...options
-      });
-
-      if (!response.ok) {
-        throw new NetworkError(
-          `Request failed: ${response.statusText}`,
-          response.status
-        );
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error instanceof NetworkError) {
-        // Handle network-specific errors
-        console.error(`Network error: ${error.statusCode}`);
-      } else {
-        // Handle other errors
-        console.error("Unexpected error:", error);
-      }
-      throw error;
-    }
-  }
-}
-
-// Usage
-try {
-  const user = await ApiClient.request('/api/users/123');
-  console.log(user);
-} catch (error) {
-  showErrorMessage("Failed to load user data");
-}
-```
-
----
-
-### 2. Form Validation
-
-```javascript
-class FormValidator {
-  static validate(data) {
-    const errors = [];
-
-    try {
-      this.validateEmail(data.email);
-    } catch (e) {
-      errors.push(e.message);
-    }
-
-    try {
-      this.validateAge(data.age);
-    } catch (e) {
-      errors.push(e.message);
-    }
-
-    try {
-      this.validatePassword(data.password);
-    } catch (e) {
-      errors.push(e.message);
-    }
-
-    if (errors.length > 0) {
-      throw new ValidationError(errors.join(', '));
-    }
-
-    return true;
-  }
-
-  static validateEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(email)) {
-      throw new ValidationError("Invalid email format");
-    }
-  }
-
-  static validateAge(age) {
-    if (age < 18) {
-      throw new ValidationError("Must be 18 or older");
-    }
-    if (age > 120) {
-      throw new ValidationError("Invalid age");
-    }
-  }
-
-  static validatePassword(password) {
-    if (password.length < 8) {
-      throw new ValidationError("Password must be at least 8 characters");
-    }
-  }
-}
-
-// Usage
-function submitForm(data) {
+```js
+async function getUserDashboard(userId) {
   try {
-    FormValidator.validate(data);
-    saveToDatabase(data);
-    showSuccessMessage();
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      showErrorMessage(error.message);
-    } else {
-      showErrorMessage("Something went wrong");
-      Logger.logError(error);
-    }
-  }
-}
-```
-
----
-
-### 3. File Processing
-
-```javascript
-async function processCSV(file) {
-  let fileHandle;
-  try {
-    fileHandle = await openFile(file);
-    const content = await readFile(fileHandle);
-    const rows = parseCSV(content);
+    // Fetch user profile first
+    const user = await fetchUser(userId);
     
-    const validated = rows.map((row, index) => {
-      try {
-        return validateRow(row);
-      } catch (error) {
-        console.warn(`Row ${index} validation failed:`, error.message);
-        return null;
-      }
-    }).filter(Boolean);
-
-    await saveToDatabase(validated);
-    return { success: true, processed: validated.length };
-  } catch (error) {
-    console.error("CSV processing failed:", error);
-    await logError(error, { filename: file.name });
-    await notifyAdmin(error);
-    return { success: false, error: error.message };
-  } finally {
-    if (fileHandle) {
-      await closeFile(fileHandle);
-    }
-    cleanup();
-  }
-}
-```
-
----
-
-### 4. Database Operations
-
-```javascript
-class Database {
-  static async transaction(operations) {
-    const connection = await this.connect();
+    // Then fetch related data in parallel
+    const [posts, followers, activity] = await Promise.all([
+      fetchUserPosts(userId),
+      fetchFollowers(userId),
+      fetchActivity(userId)
+    ]);
     
-    try {
-      await connection.beginTransaction();
-      
-      for (const operation of operations) {
-        await operation(connection);
-      }
-      
-      await connection.commit();
-      return { success: true };
-    } catch (error) {
-      await connection.rollback();
-      console.error("Transaction failed:", error);
-      throw new DatabaseError("Transaction rolled back", error);
-    } finally {
-      await connection.close();
-    }
+    return {
+      user,
+      stats: {
+        postsCount: posts.length,
+        followersCount: followers.length
+      },
+      recentActivity: activity.slice(0, 10)
+    };
+  } catch (error) {
+    console.error('Dashboard load failed:', error);
+    throw error;
   }
-}
-
-// Usage
-try {
-  await Database.transaction([
-    (conn) => conn.query("INSERT INTO users..."),
-    (conn) => conn.query("UPDATE accounts..."),
-    (conn) => conn.query("INSERT INTO logs...")
-  ]);
-} catch (error) {
-  console.error("Database operation failed:", error);
 }
 ```
 
----
+### Use Case 2: Rate Limiting API Calls
 
-### 5. Rate Limiting with Error Recovery
-
-```javascript
-class RateLimiter {
-  constructor(maxRequests, timeWindow) {
-    this.maxRequests = maxRequests;
-    this.timeWindow = timeWindow;
-    this.requests = [];
-  }
-
-  async execute(fn) {
-    try {
-      this.checkLimit();
-      const result = await fn();
-      this.recordRequest();
-      return result;
-    } catch (error) {
-      if (error.name === 'RateLimitError') {
-        const waitTime = this.getWaitTime();
-        console.log(`Rate limited. Waiting ${waitTime}ms`);
-        await this.wait(waitTime);
-        return this.execute(fn);  // Retry
-      }
-      throw error;
-    }
-  }
-
-  checkLimit() {
-    this.cleanOldRequests();
-    if (this.requests.length >= this.maxRequests) {
-      throw new RateLimitError("Rate limit exceeded");
-    }
-  }
-
-  cleanOldRequests() {
-    const now = Date.now();
-    this.requests = this.requests.filter(
-      time => now - time < this.timeWindow
+```js
+async function batchProcess(items, limit = 3) {
+  const results = [];
+  
+  for (let i = 0; i < items.length; i += limit) {
+    const batch = items.slice(i, i + limit);
+    const batchResults = await Promise.all(
+      batch.map(item => processItem(item))
     );
+    results.push(...batchResults);
   }
-
-  recordRequest() {
-    this.requests.push(Date.now());
-  }
-
-  getWaitTime() {
-    const oldest = Math.min(...this.requests);
-    return this.timeWindow - (Date.now() - oldest);
-  }
-
-  wait(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-}
-
-// Usage
-const limiter = new RateLimiter(5, 60000);  // 5 requests per minute
-
-try {
-  const data = await limiter.execute(() => fetch('/api/data'));
-} catch (error) {
-  console.error("Request failed:", error);
+  
+  return results;
 }
 ```
 
----
+### Use Case 3: Graceful Degradation
 
-## **Error Handling Cheatsheet**
-
-| Scenario                 | Solution                    | Example                               |
-| ------------------------ | --------------------------- | ------------------------------------- |
-| **Synchronous error**    | `try-catch`                 | `try { throw Error() } catch(e) {}`   |
-| **Async (Promise)**      | `.catch()`                  | `promise.catch(e => {})`              |
-| **Async (async/await)**  | `try-catch` around `await`  | `try { await fn() } catch(e) {}`      |
-| **Cleanup needed**       | `finally` block             | `finally { cleanup() }`               |
-| **Custom errors**        | `class extends Error`       | `class MyError extends Error {}`      |
-| **Global errors**        | Event listeners             | `window.onerror`, `process.on()`      |
-| **Unhandled rejections** | `unhandledrejection`        | `window.addEventListener()`           |
-| **Retry logic**          | Loop with delay             | `for(let i=0; i<3; i++) try{}catch{}` |
-| **Multiple operations**  | `Promise.all()` + try-catch | `try { await Promise.all() }`         |
-| **Safe parsing**         | Wrapper function            | `safeParse(json, fallback)`           |
-
----
-
-## **Best Practices**
-
-### `DO`
-
-1. **Always handle errors** - Never let them fail silently
-2. **Use custom error classes** - Makes error handling more precise
-3. **Log errors** - Send to monitoring service (Sentry, LogRocket)
-4. **Provide context** - Include relevant data in error messages
-5. **Use finally for cleanup** - Close connections, clear timers
-6. **Validate early** - Catch errors before they propagate
-7. **Fail fast** - Don't continue with invalid state
-8. **Use specific error types** - Catch only errors you can handle
-
-### `DON'T`
-
-1. **Don't swallow errors** - Empty catch blocks hide bugs
-2. **Don't catch everything** - Only catch errors you can handle
-3. **Don't use errors for control flow** - Use conditionals instead
-4. **Don't ignore async errors** - Always handle promise rejections
-5. **Don't trust user input** - Always validate and sanitize
-6. **Don't expose sensitive info** - Sanitize error messages for users
-7. **Don't retry indefinitely** - Set max retry limits
-8. **Don't block with sync errors** - Use async error handling
-
----
-
-## **Error Types Reference**
-
-### Built-in Error Types
-
-```javascript
-// Generic error
-new Error("Something went wrong")
-
-// Type errors
-new TypeError("Expected string, got number")
-
-// Reference errors
-new ReferenceError("Variable not defined")
-
-// Syntax errors
-new SyntaxError("Invalid JSON")
-
-// Range errors
-new RangeError("Array length invalid")
-
-// URI errors
-new URIError("Invalid URI")
-```
-
-### Custom Error Types
-
-```javascript
-class ValidationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "ValidationError";
-  }
-}
-
-class NetworkError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.name = "NetworkError";
-    this.statusCode = statusCode;
-  }
-}
-
-class DatabaseError extends Error {
-  constructor(message, query) {
-    super(message);
-    this.name = "DatabaseError";
-    this.query = query;
-  }
-}
-
-class AuthenticationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "AuthenticationError";
+```js
+async function loadWithFallback() {
+  try {
+    return await fetch('/api/primary');
+  } catch {
+    console.warn('Primary API failed, trying backup...');
+    try {
+      return await fetch('/api/backup');
+    } catch {
+      console.error('All APIs failed, using cache');
+      return getCachedData();
+    }
   }
 }
 ```
 
 ---
 
-## **Quick Reference**
+## **Performance Comparison**
 
-### Error Handling Decision Tree
+```js
+// Sequential: 3000ms total
+async function sequential() {
+  const a = await delay(1000); // 0-1000ms
+  const b = await delay(1000); // 1000-2000ms
+  const c = await delay(1000); // 2000-3000ms
+}
 
-```text
-Is it synchronous?
-├─ YES → Use try-catch
-└─ NO → Is it a Promise?
-    ├─ YES → Use .catch() or async/await + try-catch
-    └─ NO → Is it a callback?
-        └─ YES → Handle error in callback (error-first pattern)
-
-Do you need cleanup?
-└─ YES → Add finally block
-
-Is this a specific error type?
-└─ YES → Create custom error class
-
-Do you need to retry?
-└─ YES → Wrap in retry logic
-
-Should this be logged?
-└─ YES → Send to logging service
+// Parallel: 1000ms total
+async function parallel() {
+  const [a, b, c] = await Promise.all([
+    delay(1000), // All start at 0ms
+    delay(1000),
+    delay(1000)
+  ]); // All finish at ~1000ms
+}
 ```
 
 ---
 
-## **Interview Questions to Practice**
+## **Key Takeaways**
 
-1. **What's the difference between `throw` and `return`?**
-2. **Why doesn't try-catch work with setTimeout?**
-3. **What happens if you return inside finally?**
-4. **How do you handle errors in Promise.all()?**
-5. **What's the difference between Error and Exception?**
-6. **How do you create custom error types?**
-7. **What's error bubbling/propagation?**
-8. **How do you handle async errors in event handlers?**
-9. **What's the difference between handled and unhandled errors?**
-10. **How do you implement a retry mechanism?**
+1. **Promises** represent future values and have three states: pending, fulfilled, rejected
+2. **Microtasks** (Promise callbacks) execute before macrotasks (setTimeout)
+3. **Async/await** is syntactic sugar that makes Promises easier to work with
+4. **Always use `await`** when you need the resolved value
+5. **Use `Promise.all()`** for parallel operations
+6. **Handle errors** with try-catch or .catch()
+7. **Don't mix** callbacks and async/await
+8. **Return Promises** in .then() for chaining
 
 ---
 
-## **Summary**
+## **Additional Resources**
 
-Error handling in JavaScript is essential for building robust applications. Key takeaways:
-
-- **Synchronous**: Use `try-catch-finally`
-- **Asynchronous**: Use `.catch()` or `try-catch` with `async/await`
-- **Always clean up**: Use `finally` for resource cleanup
-- **Custom errors**: Extend `Error` class for specific error types
-- **Global handlers**: Set up fallback error handling
-- **Never swallow errors**: Always log or handle appropriately
-- **Validate early**: Catch errors before they propagate
-- **Test error paths**: Write tests for error scenarios
+- [MDN - Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+- [MDN - async function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)
+- [MDN - await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await)
+- [JavaScript.info - Promises](https://javascript.info/promise-basics)
+- [Event Loop Visualizer](http://latentflip.com/loupe/)
 
 ---
