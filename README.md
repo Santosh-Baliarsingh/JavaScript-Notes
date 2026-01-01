@@ -980,7 +980,7 @@ setTimeout(() => {
 setTimeout(() => console.log('E'), 0);
 ```
 
-**Output:** `A → B → D → E → C`
+**Output:** `A → B → E → D → C`
 
 **Step-by-step:**
 
@@ -1002,13 +1002,13 @@ Initial:
    State: Macro: [setTimeout(E), setTimeout(D), setTimeout(C)]
           Micro: []
 
-3. Execute setTimeout(D)
-   → Print 'D'
-   State: Macro: [setTimeout(E), setTimeout(C)]
+3. Execute setTimeout(E)
+   → Print 'E'
+   State: Macro: [setTimeout(D), setTimeout(C)]
           Micro: []
 
-4. Execute setTimeout(E)
-   → Print 'E'
+4. Execute setTimeout(D)
+   → Print 'D'
    State: Macro: [setTimeout(C)]
           Micro: []
 
