@@ -395,33 +395,39 @@ console.log(wordFrequency("hello world hello"));
 
 ### Trap 1: Strings are mutable
 
-❌ WRONG: Strings can be modified in place
-✅ CORRECT: Strings are immutable – methods return new strings
+- ❌ WRONG: Strings can be modified in place
+
+- ✅ CORRECT: Strings are immutable – methods return new strings
 
 ### Trap 2: substr() is safe to use
 
-❌ WRONG: substr() is recommended
-✅ CORRECT: substr() is deprecated – use slice() or substring()
+- ❌ WRONG: substr() is recommended
+
+- ✅ CORRECT: substr() is deprecated – use slice() or substring()
 
 ### Trap 3: substring(-1) works like slice(-1)
 
-❌ WRONG: substring(-1) returns last character
-✅ CORRECT: substring() treats negative as 0
+- ❌ WRONG: substring(-1) returns last character
+
+- ✅ CORRECT: substring() treats negative as 0
 
 ### Trap 4: indexOf() returns boolean
 
-❌ WRONG: indexOf() returns true/false
-✅ CORRECT: indexOf() returns number (-1 if not found)
+- ❌ WRONG: indexOf() returns true/false
+
+- ✅ CORRECT: indexOf() returns number (-1 if not found)
 
 ### Trap 5: split("") works correctly with emoji
 
-❌ WRONG: "😀".split("") returns ["😀"]
-✅ CORRECT: Use Array.from() or [...str] for Unicode
+- ❌ WRONG: "😀".split("") returns ["😀"]
+
+- ✅ CORRECT: Use Array.from() or [...str] for Unicode
 
 ### Trap 6: replace() replaces all matches
 
-❌ WRONG: str.replace("cat", "dog") replaces all "cat"
-✅ CORRECT: Only replaces first – use replaceAll() or /g flag
+- ❌ WRONG: str.replace("cat", "dog") replaces all "cat"
+
+- ✅ CORRECT: Only replaces first – use replaceAll() or /g flag
 
 ---
 
