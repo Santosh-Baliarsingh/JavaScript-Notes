@@ -17,6 +17,10 @@
     - [Internal Representation \& Memory Model](#internal-representation--memory-model)
     - [Property Descriptors - The Hidden Metadata](#property-descriptors---the-hidden-metadata)
     - [Prototype Chain - The Inheritance Mechanism](#prototype-chain---the-inheritance-mechanism)
+      - [How Property Lookup Works (The Prototype Chain)](#how-property-lookup-works-the-prototype-chain)
+      - [Visual Representation of Your Code's Chain](#visual-representation-of-your-codes-chain)
+      - [Key Takeaways](#key-takeaways)
+      - [Important Rules](#important-rules)
     - [Object vs Map - When to Use What?](#object-vs-map---when-to-use-what)
     - [Memory \& Performance Implications](#memory--performance-implications)
     - [V8 Hidden Classes \& Optimization](#v8-hidden-classes--optimization)
@@ -264,16 +268,71 @@ dog.toString();  // "[object Object]"
 // Lookup chain: dog → animal → Object.prototype.toString()
 ```
 
+#### How Property Lookup Works (The Prototype Chain)
+
+When you access a property like dog.someProperty, JavaScript follows this exact process:
+
+```text
+dog.someProperty
+  │
+  ├─ Step 1: Check dog itself (own properties)
+  │           → dog has: { barks: true }
+  │           → If found here, return it. DONE.
+  │
+  ├─ Step 2: Check dog's prototype (animal)
+  │           → animal has: { eats: true, walk() }
+  │           → If found here, return it. DONE.
+  │
+  ├─ Step 3: Check animal's prototype (Object.prototype)
+  │           → Object.prototype has: { toString(), hasOwnProperty(), ... }
+  │           → If found here, return it. DONE.
+  │
+  └─ Step 4: Check Object.prototype's prototype (null)
+              → null means end of chain.
+              → Property not found anywhere → return undefined
+```
+
+#### Visual Representation of Your Code's Chain
+
+```text
+┌──────────────┐     ┌──────────────────┐     ┌─────────────────────┐
+│     dog      │     │     animal       │     │  Object.prototype   │
+│──────────────│     │──────────────────│     │─────────────────────│
+│ barks: true  │────▶│ eats: true       │────▶│ toString()          │────▶ null
+│              │     │ walk()           │     │ hasOwnProperty()    │
+└──────────────┘     └──────────────────┘     │ valueOf()           │
+  [[Prototype]]        [[Prototype]]          └─────────────────────┘
+  = animal             = Object.prototype       [[Prototype]] = null
+```
+
+#### Key Takeaways
+
+| LookUp           | Found Where           | Why                         |
+| ---------------- | --------------------- | --------------------------- |
+| `dog.barks`      | `dog` itself          | Own property, direct access |
+| `dog.eats`       | `animal`              | 1 step up the chain         |
+| `dog.walk()`     | `animal`              | 1 step up the chain         |
+| `dog.toString()` | `Object.prototype`    | 2 steps up the chain        |
+| `dog.fly`        | Nowhere → `undefined` | Not found in entire chain   |
+
+#### Important Rules
+
+1. Writing always goes to the object itself — `dog.eats = false` would create a new own property on `dog`, NOT modify `animal.eats`. This is called property shadowing.
+
+2. Reading walks up the chain — it stops at the first match.
+
+3. The chain always ends at `null` — `Object.prototype.__proto__` is `null`, which terminates the lookup.
+
 ### Object vs Map - When to Use What?
 
-| Feature | Object | Map |
-|---------|--------|-----|
-| **Key types** | Strings, Symbols only | Any type (objects, functions, primitives) |
-| **Order** | Not guaranteed (mostly insertion order) | Guaranteed insertion order |
-| **Size** | Manual (`Object.keys().length`) | Built-in (`map.size`) |
-| **Performance** | Slower for frequent add/delete | Optimized for frequent operations |
-| **Iteration** | `for...in`, `Object.keys()` | `map.forEach()`, `for...of` |
-| **JSON** | ✅ `JSON.stringify()` works | ❌ Not directly serializable |
+| Feature         | Object                                  | Map                                       |
+| --------------- | --------------------------------------- | ----------------------------------------- |
+| **Key types**   | Strings, Symbols only                   | Any type (objects, functions, primitives) |
+| **Order**       | Not guaranteed (mostly insertion order) | Guaranteed insertion order                |
+| **Size**        | Manual (`Object.keys().length`)         | Built-in (`map.size`)                     |
+| **Performance** | Slower for frequent add/delete          | Optimized for frequent operations         |
+| **Iteration**   | `for...in`, `Object.keys()`             | `map.forEach()`, `for...of`               |
+| **JSON**        | ✅ `JSON.stringify()` works              | ❌ Not directly serializable               |
 
 **Use Object when:**
 
@@ -830,13 +889,13 @@ const bob = createPerson("Bob", 30);  // No 'new' needed
 
 **Comparison:**
 
-| Feature | Constructor | Factory |
-|---------|------------|---------|
-| **`Syntax`** | `new Person()` | `createPerson()` |
-| **`this binding`** | Automatic | Manual |
-| **`Prototype`** | Shared methods | Each object has own methods |
-| **`Memory`** | More efficient | Less efficient (if methods included) |
-| **`Flexibility`** | Less flexible | More flexible (can return anything) |
+| Feature            | Constructor    | Factory                              |
+| ------------------ | -------------- | ------------------------------------ |
+| **`Syntax`**       | `new Person()` | `createPerson()`                     |
+| **`this binding`** | Automatic      | Manual                               |
+| **`Prototype`**    | Shared methods | Each object has own methods          |
+| **`Memory`**       | More efficient | Less efficient (if methods included) |
+| **`Flexibility`**  | Less flexible  | More flexible (can return anything)  |
 
 ### Prototype Pattern (Memory Efficient)
 
@@ -1593,20 +1652,20 @@ const safe = omit(user, ['password']);
 
 ## **Quick Reference Table**
 
-| Method | Purpose | Returns |
-|--------|---------|---------|
-| `Object.keys()` | Get enumerable keys | Array |
-| `Object.values()` | Get enumerable values | Array |
-| `Object.entries()` | Get [key, value] pairs | Array |
-| `Object.assign()` | Merge objects (shallow) | Target object |
-| `Object.create()` | Create with prototype | New object |
-| `Object.freeze()` | Make immutable (shallow) | Object |
-| `Object.seal()` | Prevent add/delete | Object |
-| `Object.is()` | Strict equality | Boolean |
-| `Object.hasOwn()` | Check own property | Boolean |
-| `Object.fromEntries()` | Convert entries to object | Object |
-| `Object.getPrototypeOf()` | Get prototype | Object/null |
-| `Object.defineProperty()` | Define property | Object |
+| Method                    | Purpose                   | Returns       |
+| ------------------------- | ------------------------- | ------------- |
+| `Object.keys()`           | Get enumerable keys       | Array         |
+| `Object.values()`         | Get enumerable values     | Array         |
+| `Object.entries()`        | Get [key, value] pairs    | Array         |
+| `Object.assign()`         | Merge objects (shallow)   | Target object |
+| `Object.create()`         | Create with prototype     | New object    |
+| `Object.freeze()`         | Make immutable (shallow)  | Object        |
+| `Object.seal()`           | Prevent add/delete        | Object        |
+| `Object.is()`             | Strict equality           | Boolean       |
+| `Object.hasOwn()`         | Check own property        | Boolean       |
+| `Object.fromEntries()`    | Convert entries to object | Object        |
+| `Object.getPrototypeOf()` | Get prototype             | Object/null   |
+| `Object.defineProperty()` | Define property           | Object        |
 
 ---
 
