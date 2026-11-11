@@ -602,3 +602,5 @@ teamAModule.render(container);
 5. **Use barrel files** (`index.js`) to simplify imports
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
