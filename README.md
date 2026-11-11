@@ -488,3 +488,5 @@ s = dotall    u = unicode             y = sticky
 - [RegExr](https://regexr.com/) - `Learn, build & test regex`
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
