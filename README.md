@@ -443,3 +443,5 @@ new Calculator().add(5).multiply(2); // Chaining works via 'return this'
 - [You Don't Know JS: this & Object Prototypes](https://github.com/getify/You-Dont-Know-JS)
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
