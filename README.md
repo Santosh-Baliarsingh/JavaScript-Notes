@@ -1739,3 +1739,5 @@ person.age = -5; // ❌ Error: Invalid age
 5. **Use `Map` for frequent additions/deletions** - faster than objects for dynamic data
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
