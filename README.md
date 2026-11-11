@@ -1029,3 +1029,5 @@ Error handling in JavaScript is essential for building robust applications. Key 
 - **Test error paths**: Write tests for error scenarios
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
