@@ -545,3 +545,5 @@ const result = "text".repeat(1000);
 7. **Deprecated methods** – avoid substr(), use slice() instead
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
