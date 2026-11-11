@@ -876,3 +876,7 @@ const wait = ms => new Promise(res => setTimeout(res, ms));
 ---
 
 **Reference:** [MDN JavaScript Functions Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions)
+
+---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
