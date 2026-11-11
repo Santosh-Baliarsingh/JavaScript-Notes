@@ -1352,3 +1352,5 @@ function safeMerge(target, source) {
 **🚨 Remember: Prototype pollution is a CRITICAL vulnerability. Always sanitize and validate user input before merging into objects!**
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
