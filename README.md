@@ -1259,3 +1259,5 @@ button.addEventListener('click', () => {
 6. Understanding this prevents race conditions and timing bugs
 
 ---
+
+**Licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) by Santosh Kumar Baliarsingh**
